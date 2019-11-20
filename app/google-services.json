@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "873796184978",
+    "firebase_url": "https://gettoknowyourcityagain.firebaseio.com",
+    "project_id": "gettoknowyourcityagain",
+    "storage_bucket": "gettoknowyourcityagain.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873796184978:android:bc980380fa7aefb46eaf4b",
+        "android_client_info": {
+          "package_name": "com.Get_to_know_your_city_again"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873796184978-asv8dga0l23kpda0fg5klr4nnv2g8nmr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Get_to_know_your_city_again",
+            "certificate_hash": "17762dc2d51ccf85b24a3b88b531438a89f074dd"
+          }
+        },
+        {
+          "client_id": "873796184978-3c294ca2urh3iuvaknejdj0j416kauds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfurU9NsdBQIy3viGAFXnXAtJDgFDPiyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873796184978-3c294ca2urh3iuvaknejdj0j416kauds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
