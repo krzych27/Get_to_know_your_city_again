@@ -2,6 +2,7 @@ package com.Get_to_know_your_city_again;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.Get_to_know_your_city_again.ui.home.MapViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,62 +23,62 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.config.IConfigurationProvider;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.osmdroid.tileprovider.util.StorageUtils.getStorage;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int MY_REQUEST_CODE = 777 ;
     List<AuthUI.IdpConfig> providers;
     Button buttonSignOut;
+    Button buttonMaps;
+
+
+    private MapViewModel mapViewModel;
+    private MapView map;
+    private Context context;
+    private GpsMyLocationProvider gpsMyLocationProvider;
+    private IMapController mapController;
+    private MyLocationNewOverlay myLocationNewOverlay;
+    private Bitmap icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_main);
 
-        MapView map = (MapView) findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
+        buttonSignOut = findViewById(R.id.buttonSign_out);
+        buttonSignOut.setOnClickListener(this);
+        buttonMaps =findViewById(R.id.buttonMap);
+        buttonMaps.setOnClickListener(this);
 
-        GeoPoint startPoint = new GeoPoint(50.068081, 19.906896 );
-        IMapController mapController = map.getController();
-        mapController.setZoom(5);
-        mapController.setCenter(startPoint);
-
-        buttonSignOut = (Button)findViewById(R.id.buttonSign_out);
-        buttonSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AuthUI.getInstance()
-                        .signOut(MainActivity.this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                buttonSignOut.setEnabled(false);
-                                showSignInOptions();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-            }
-        });
+//        buttonSignOut.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    AuthUI.getInstance()
+//                            .signOut(MainActivity.this)
+//                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    buttonSignOut.setEnabled(false);
+//                                    showSignInOptions();
+//                                }
+//                            }).addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Toast.makeText(MainActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
+//
+//                        }
+//                    });
+//                }
+//        });
         providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build()
@@ -84,6 +86,32 @@ public class MainActivity extends AppCompatActivity {
 
         showSignInOptions();
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+
+            case R.id.buttonMap:{
+                Intent intent = new Intent(this, MapsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+            case R.id.buttonSign_out:{
+                AuthUI.getInstance()
+                        .signOut(MainActivity.this)
+                        .addOnCompleteListener(task -> {
+                            buttonSignOut.setEnabled(false);
+                            buttonMaps.setEnabled(false);
+                            showSignInOptions();
+                        });
+            }
+        }
+    }
+
+//    @Override
+//    public void onFailure(@NonNull Exception e) {
+//            Toast.makeText(MainActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
+//    }
 
     private void showSignInOptions(){
         startActivityForResult(
@@ -105,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 Toast.makeText(this,""+user.getEmail(),Toast.LENGTH_SHORT).show();
                 buttonSignOut.setEnabled(true);
+                buttonMaps.setEnabled(true);
 
             }
             else {
