@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import com.Get_to_know_your_city_again.ui.home.MapFragment;
+import com.Get_to_know_your_city_again.ui.home.NewItemDialog;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,17 +28,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 
-import org.osmdroid.api.IMapController;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.tileprovider.tilesource.XYTileSource;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.TilesOverlay;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MapsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -77,13 +67,12 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
 
             case R.id.fab: {
-                Snackbar.make(view, "Add new object", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Add new object", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                NewItemDialog dialog = new NewItemDialog();
+                dialog.show(getSupportFragmentManager(), getString(R.string.dialog_new_item));
+                break;
             }
-//            case R.id.toolbar: {
-//                Toolbar toolbar = findViewById(R.id.toolbar);
-//                setSupportActionBar(toolbar);
-//            }
         }
     }
 

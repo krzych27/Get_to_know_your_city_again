@@ -61,6 +61,9 @@ public class MapFragment extends Fragment implements LocationListener  {
     private Locale current;
     private MyAsyncTask myAsyncTask = null;
     private String name = "Kopalnia Ignacy";
+    double lat;
+    double lng;
+//    ArrayList<OverlayItem> items = null;
 //    private GeocoderNominatim geocoderNominatim;
 //    private Geocode geocode;
 
@@ -112,7 +115,19 @@ public class MapFragment extends Fragment implements LocationListener  {
 
         mapController.setZoom((double)12);
 
-        Geocode("Kopalnia Ignacy");
+
+        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+
+        Geocode("Kopalnia Ignacy",items);
+
+        int size = items.size();
+        Log.d("size arraylist of items",String.valueOf(size));
+
+        Log.d("lat in CreateMarker",String.valueOf(lat));
+        Log.d("lng in CreateMarker",String.valueOf(lng));
+
+//        addToArrayItem(items,"Kopalnia Ignacy","Zabytkowa kopalnia węgla kamiennego w Rybniku",lat,lng);
+//        CreateMarker();
 
 //        point = Geocode("Mikołowska 4 Rybnik");
 //        double lat3 = point.get(0);
@@ -179,30 +194,40 @@ public class MapFragment extends Fragment implements LocationListener  {
 
     }
 
+    private void addToArrayItem( ArrayList<OverlayItem> items,String name,String description,double lat,
+            double lng ) {
+        OverlayItem item = new OverlayItem(name,description,new GeoPoint(lat,lng));
+        items.add(item);
+    }
+
     private void CreateMarker()
     {
-        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+//        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
-        OverlayItem item1 = new OverlayItem("Rynek w Rybniku","Rybnicki Rynek to nie tylko główny, ale zarazem najbardziej reprezentacyjny plac miasta. Wytyczono go podczas lokacji miasta na przełomie XIII i XIV wieku, ale nie znajdziemy zabytków z tego okresu. Głównie dlatego, że aż do końca XVIII stulecia rynek otoczony był drewnianą zabudową. Zmiany nastąpiły po 1788 r., czyli wtedy, kiedy miasto znalazło się pod rządami Państwa Pruskiego.\n" +
-                "\n" +
-                "Obecnie rynek otoczony jest uroczymi kamieniczkami, które reprezentują kilka różnych stylów. Dominuje klasycyzm, eklektyzm, ale znajdziemy też budynki neorenesansowe oraz wczesnomodernistyczne.\n" +
-                "\n" +
-                "Warto zwrócić uwagę na Dawny Ratusz (1823 r.), gdzie obecnie mieści się muzeum a także Urząd Stanu Cywilnego. Na płycie rynku znajdziemy też fontannę oraz wieńczącą ją figurę św. Jana Nepomucena. Wokół placu ustawiono drewniane ławeczki, świetnym miejscem do letniego relaksu są również letnie ogródki restauracyjne.\n" +
-                "\n"
-                , new GeoPoint(50.0954, 18.5419));
 
-        OverlayItem item2 = new OverlayItem("Zalew Rybnicki", "Zbiornik zaporowy utworzony przez spiętrzenie wód rzecznych Rudy zaporą w Rybniku Stodołach.\n"+
-                "Zbiornik o powierzchni 4,5 km² i objętości 22 mln m³ wody został utworzony na terenie dzielnic Rybnika – Rybnickiej Kuźni, Orzepowic, Chwałęcic i Stodół, dla potrzeb Elektrowni Rybnik.\n"
-                , new GeoPoint(50.135833, 18.502222));
+//        addToArrayItem(items,"Kopalnia Ignacy","Zabytkowa kopalnia węgla kamiennego w Rybniku",lat,lng);
 
-        items.add(item1);
-        items.add(item2);
+//        OverlayItem item1 = new OverlayItem("Rynek w Rybniku","Rybnicki Rynek to nie tylko główny, ale zarazem najbardziej reprezentacyjny plac miasta. Wytyczono go podczas lokacji miasta na przełomie XIII i XIV wieku, ale nie znajdziemy zabytków z tego okresu. Głównie dlatego, że aż do końca XVIII stulecia rynek otoczony był drewnianą zabudową. Zmiany nastąpiły po 1788 r., czyli wtedy, kiedy miasto znalazło się pod rządami Państwa Pruskiego.\n" +
+//                "\n" +
+//                "Obecnie rynek otoczony jest uroczymi kamieniczkami, które reprezentują kilka różnych stylów. Dominuje klasycyzm, eklektyzm, ale znajdziemy też budynki neorenesansowe oraz wczesnomodernistyczne.\n" +
+//                "\n" +
+//                "Warto zwrócić uwagę na Dawny Ratusz (1823 r.), gdzie obecnie mieści się muzeum a także Urząd Stanu Cywilnego. Na płycie rynku znajdziemy też fontannę oraz wieńczącą ją figurę św. Jana Nepomucena. Wokół placu ustawiono drewniane ławeczki, świetnym miejscem do letniego relaksu są również letnie ogródki restauracyjne.\n" +
+//                "\n"
+//                , new GeoPoint(50.0954, 18.5419));
+//
+//        OverlayItem item2 = new OverlayItem("Zalew Rybnicki", "Zbiornik zaporowy utworzony przez spiętrzenie wód rzecznych Rudy zaporą w Rybniku Stodołach.\n"+
+//                "Zbiornik o powierzchni 4,5 km² i objętości 22 mln m³ wody został utworzony na terenie dzielnic Rybnika – Rybnickiej Kuźni, Orzepowic, Chwałęcic i Stodół, dla potrzeb Elektrowni Rybnik.\n"
+//                , new GeoPoint(50.135833, 18.502222));
+//
+//        items.add(item1);
+//        items.add(item2);
 
-        MyItemizedOverlay myItemizedOverlay = new MyItemizedOverlay(context,items);
-
-        myItemizedOverlay.setFocusItemsOnTap(true);
-        map.getOverlays().add(myItemizedOverlay);
-        map.invalidate();
+//        MyItemizedOverlay myItemizedOverlay = new MyItemizedOverlay(context,items);
+//
+//        myItemizedOverlay.setFocusItemsOnTap(true);
+//        map.getOverlays().add(myItemizedOverlay);
+//
+//        map.invalidate();
     }
 
 
@@ -240,18 +265,21 @@ public class MapFragment extends Fragment implements LocationListener  {
 
 //        MapView pMap;
 //        Context pContext;
-        double lat;
-        double lng;
+//        double lat;
+//        double lng;
         Locale pCurrent = getResources().getConfiguration().locale;
         private final String userAgent = BuildConfig.APPLICATION_ID;
         GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
-
-
+        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
         ProgressDialog progressDialog;
         String countryTitleString;
 
-//        private MyAsyncTask(Context context, Locale current, MapView map) {
+        public MyAsyncTask(ArrayList<OverlayItem> items) {
+            this.items = items;
+        }
+
+        //        private MyAsyncTask(Context context, Locale current, MapView map) {
 //            this.pContext = context;
 //            this.pCurrent = current;
 //            this.pMap = map;
@@ -295,21 +323,38 @@ public class MapFragment extends Fragment implements LocationListener  {
                 lng = bb.getLonEast();
                 Log.d("lat",String.valueOf(lat));
                 Log.d("lng",String.valueOf(lng));
+
+                addToArrayItem(items,"Kopalnia Ignacy","Zabytkowa kopalnia węgla kamiennego w Rybniku",lat,lng);
+
                 GeoPoint object = new GeoPoint(lat,lng);
                 mapController.setCenter(object);
                 mapController.animateTo(object);
-                addMarker(object,"Zabytkowa kopalnia węgla kamiennego w Rybniku");
-                CreateMarker();
+
+                MyItemizedOverlay myItemizedOverlay = new MyItemizedOverlay(context,items);
+
+                myItemizedOverlay.setFocusItemsOnTap(true);
+                map.getOverlays().add(myItemizedOverlay);
+
                 map.invalidate();
+
+
+//                CreateMarker();
+//                addMarker(object,"Zabytkowa kopalnia węgla kamiennego w Rybniku");
+//                CreateMarker();
+//
+//                map.invalidate();
+
+                //should be return array[lat,lng]
 
 //                Toast.makeText(pContext, countryTitleString, Toast.LENGTH_SHORT).show();
 
             }
         }
+
     }
 
-    private void Geocode(String name){
-        this.myAsyncTask = new MyAsyncTask();
+    private void Geocode(String name, ArrayList<OverlayItem> items){
+        this.myAsyncTask = new MyAsyncTask(items);
         this.myAsyncTask.execute(name);
 
     }

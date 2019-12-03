@@ -39,15 +39,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button buttonSignOut;
     Button buttonMaps;
 
-
-    private MapViewModel mapViewModel;
-    private MapView map;
-    private Context context;
-    private GpsMyLocationProvider gpsMyLocationProvider;
-    private IMapController mapController;
-    private MyLocationNewOverlay myLocationNewOverlay;
-    private Bitmap icon;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

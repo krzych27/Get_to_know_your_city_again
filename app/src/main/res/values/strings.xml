@@ -15,4 +15,13 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+
+    <string name="dialog_new_item">New object item</string>
+    <string name="add_item">Add Item</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="name_item">Name</string>
+    <string name="address_item">Address</string>
+    <string name="description_item">Description</string>
+
 </resources>
