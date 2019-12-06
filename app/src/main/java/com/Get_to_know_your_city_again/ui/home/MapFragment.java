@@ -1,5 +1,6 @@
 package com.Get_to_know_your_city_again.ui.home;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,16 +17,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.Get_to_know_your_city_again.BuildConfig;
 import com.Get_to_know_your_city_again.MainActivity;
 import com.Get_to_know_your_city_again.MapsActivity;
 import com.Get_to_know_your_city_again.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.location.GeocoderNominatim;
@@ -74,18 +78,29 @@ public class MapFragment extends Fragment implements LocationListener  {
                              ViewGroup container, Bundle savedInstanceState) {
 
        View rl = inflater.inflate(R.layout.fragment_map, container, false);
-        context = getActivity();
+        if(getActivity() != null)
+            context = getActivity();
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
         map = rl.findViewById(R.id.mapView);
 
+        FloatingActionButton fab = rl.findViewById(R.id.fab);
+        fab.setOnClickListener(v -> {
+            NewItemDialog dialog = new NewItemDialog();
+            dialog.show( getActivity().getSupportFragmentManager(), getString(R.string.dialog_new_item));
+        });
+
+
 //        current = getResources().getConfiguration().locale;
 
        setupMap();
+
+
        return rl;
 
     }
+
 
     // initializing map
     private void setupMap() {

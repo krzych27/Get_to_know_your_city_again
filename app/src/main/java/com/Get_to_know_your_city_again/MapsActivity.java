@@ -29,7 +29,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 
 
-public class MapsActivity extends AppCompatActivity implements View.OnClickListener {
+public class MapsActivity extends AppCompatActivity  {
 
     private AppBarConfiguration mAppBarConfiguration;
     Toolbar toolbar;
@@ -44,8 +44,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(this);
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -62,19 +62,19 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-
-            case R.id.fab: {
-//                Snackbar.make(view, "Add new object", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                NewItemDialog dialog = new NewItemDialog();
-                dialog.show(getSupportFragmentManager(), getString(R.string.dialog_new_item));
-                break;
-            }
-        }
-    }
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//
+////            case R.id.fab: {
+////                Snackbar.make(view, "Add new object", Snackbar.LENGTH_LONG)
+////                        .setAction("Action", null).show();
+////                NewItemDialog dialog = new NewItemDialog();
+////                dialog.show(getSupportFragmentManager(), getString(R.string.dialog_new_item));
+////                break;
+//            }
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

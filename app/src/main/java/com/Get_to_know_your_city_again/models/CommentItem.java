@@ -20,6 +20,9 @@ public class CommentItem {
         this.timestamp = timestamp;
     }
 
+    public CommentItem() {
+    }
+
     public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
