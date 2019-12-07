@@ -23,5 +23,6 @@
     <string name="name_item">Name</string>
     <string name="address_item">Address</string>
     <string name="description_item">Description</string>
+    <string name="type_item">Type</string>
 
 </resources>

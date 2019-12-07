@@ -1,6 +1,7 @@
 package com.Get_to_know_your_city_again.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +20,12 @@ public class NewItemDialog extends DialogFragment implements View.OnClickListene
     private static final String TAG = "NewItemDialog";
 
     //widgets
-    private EditText eName,eDescription,eAddress;
+    private EditText eName,eDescription,eAddress,eType;
 
     private TextView tAdd, tCancel;
     private GeoPoint geoPoint;
     private double latitude,longitude;
+    IMapActivity mapActivity;
 
     //vars
 
@@ -43,6 +45,7 @@ public class NewItemDialog extends DialogFragment implements View.OnClickListene
         eName = view.findViewById(R.id.name_item);
         eAddress = view.findViewById(R.id.address_item);
         eDescription = view.findViewById(R.id.description_item);
+        eType = view.findViewById(R.id.type_item);
         tAdd = view.findViewById(R.id.add_item);
         tCancel = view.findViewById(R.id.cancel);
 
@@ -66,9 +69,17 @@ public class NewItemDialog extends DialogFragment implements View.OnClickListene
                 String name = eName.getText().toString();
                 String address = eAddress.getText().toString();
                 String description = eDescription.getText().toString();
+                String type =eType.getText().toString();
 
 
                 if(!name.equals("")){
+
+                    // create new item
+                    Log.d("newItemDialog","name"+name);
+                    Log.d("newItemDialog","address"+address);
+                    Log.d("newItemDialog","description"+description);
+                    Log.d("newItemDialog","type"+type);
+                    mapActivity.createNewItem(name,address,description,type);
 
                     getDialog().dismiss();
                 }

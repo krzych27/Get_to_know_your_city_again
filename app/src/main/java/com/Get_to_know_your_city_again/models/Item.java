@@ -14,17 +14,19 @@ public class Item {
     private String description;
     private GeoPoint geoPoint;
     private String imageUrl;
+    private String type;
     private @ServerTimestamp Date timestamp;
     private String comments_id;
     private String item_id;
     private String user_id;
 
-    public Item(String name, String description, String address,GeoPoint geoPoint, String imageUrl, Date timestamp, String comments_id, String item_id, String user_id) {
+    public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl, String type, Date timestamp, String comments_id, String item_id, String user_id) {
         this.name = name;
         this.description = description;
         this.address = address;
         this.geoPoint = geoPoint;
         this.imageUrl = imageUrl;
+        this.type = type;
         this.timestamp = timestamp;
         this.comments_id = comments_id;
         this.item_id = item_id;
@@ -58,9 +60,6 @@ public class Item {
         return description;
     }
 
-    public void setDecription(String decription) {
-        this.description = decription;
-    }
 
     public void setGeoPoint(GeoPoint geoPoint) {
         this.geoPoint = geoPoint;
@@ -76,6 +75,14 @@ public class Item {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void setComments_id(String comments_id) {
