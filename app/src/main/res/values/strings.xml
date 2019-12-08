@@ -1,4 +1,35 @@
 <resources>
     <string name="app_name">Get_to_know_your_city_again</string>
     <string name="sign_out">Sign out</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+
+    <string name="dialog_new_item">New object item</string>
+    <string name="add_item">Add Item</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="name_item">Name</string>
+    <string name="address_item">Address</string>
+    <string name="description_item">Description</string>
+    <string name="type_item">Type</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_text">Login</string>
+    <string name="or_text">Or</string>
+    <string name="create_text">Create Account</string>
+    <string name="username_hint">Username</string>
+    <string name="get_started">Get started!</string>
+
 </resources>
