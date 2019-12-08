@@ -116,7 +116,7 @@ public class MapFragment extends Fragment implements LocationListener{
         createMarker(cords);
         //add to database with name,address,geopoint,description, imageurl,type, user_id
 
-        
+
 
 //        locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
 //        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);

@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,6 +47,7 @@ import android.widget.Toast;
 public class MapsActivity extends AppCompatActivity implements IMapActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private static final String TAG = "MapsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements IMapActivity {
 
     @Override
     public void  createNewItem(String name,String address,String description,String type) {
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Item item = new Item();
@@ -125,6 +129,29 @@ public class MapsActivity extends AppCompatActivity implements IMapActivity {
         getMenuInflater().inflate(R.menu.maps, menu);
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.optionSignOut:
+                signOut();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void signOut(){
+        Log.d(TAG, "signOut: signing out");
+        Toast.makeText(MapsActivity.this,"Signing out",Toast.LENGTH_SHORT).show();
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MapsActivity.this,
+                LoginActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {

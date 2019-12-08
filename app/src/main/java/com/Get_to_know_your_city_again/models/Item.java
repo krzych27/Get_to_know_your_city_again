@@ -19,8 +19,10 @@ public class Item {
     private String comments_id;
     private String item_id;
     private String user_id;
+    private String username;
 
-    public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl, String type, Date timestamp, String comments_id, String item_id, String user_id) {
+    public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl,
+                String type, Date timestamp, String comments_id, String item_id, String user_id,String username) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -31,6 +33,7 @@ public class Item {
         this.comments_id = comments_id;
         this.item_id = item_id;
         this.user_id = user_id;
+        this.username = username;
     }
 
     public Item() {
@@ -99,6 +102,14 @@ public class Item {
 
     public String getUser_id() {
         return user_id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setItem_id(String item_id) {

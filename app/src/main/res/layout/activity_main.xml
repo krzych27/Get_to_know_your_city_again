@@ -7,21 +7,34 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/buttonMap"
-        android:layout_width="wrap_content"
+        android:id="@+id/startButton"
+        android:text="@string/get_started"
+        android:textColor="@color/colorAccent"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:enabled="false"
-        android:text="Map" />
+        android:layout_centerInParent="true"/>
 
-    <Button
-        android:id="@+id/buttonSign_out"
-        android:layout_width="wrap_content"
-        android:enabled="false"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/buttonMap"
-        android:layout_below="@+id/buttonMap"
-        android:text="@string/sign_out" />
+<!--    <Button-->
+<!--        android:id="@+id/buttonMap"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:layout_below="@+id/startButton"-->
+<!--        android:text="Map"/>-->
+
+<!--        android:enabled="false"-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonSign_out"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignLeft="@id/buttonMap"-->
+<!--        android:layout_below="@+id/buttonMap"-->
+<!--        android:text="@string/sign_out" />-->
+
+<!--    android:enabled="false"-->
 
 
 </RelativeLayout>
