@@ -1,28 +1,11 @@
 package com.Get_to_know_your_city_again;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 
-import com.Get_to_know_your_city_again.models.Item;
-import com.Get_to_know_your_city_again.ui.home.IMapActivity;
-import com.Get_to_know_your_city_again.ui.home.MapFragment;
-import com.Get_to_know_your_city_again.ui.home.NewItemDialog;
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -30,10 +13,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -44,10 +23,12 @@ import android.view.Menu;
 import android.widget.Toast;
 
 
-public class MapsActivity extends AppCompatActivity implements IMapActivity {
+public class MapsActivity extends AppCompatActivity{
 
     private AppBarConfiguration mAppBarConfiguration;
     private static final String TAG = "MapsActivity";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,54 +52,6 @@ public class MapsActivity extends AppCompatActivity implements IMapActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-    }
-
-
-    @Override
-    public void  createNewItem(String name,String address,String description,String type) {
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Item item = new Item();
-        item.setName(name);
-        item.setAddress(address);
-        item.setDescription(description);
-//        item.setImageUrl(imageUrl);
-        item.setType(type);
-//        item.setGeoPoint(geoPoint);
-        Log.d("createNewItem","checking");
-
-
-        CollectionReference collectionReference = db.collection("Item");
-        collectionReference.add(item)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(),"Succes",Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("collection","onFailure:"+e.toString());
-                    }
-                });
-
-
-    }
-
-    @Override
-    public void updateItem(Item item) {
-
-    }
-
-    @Override
-    public void deleteItem(Item item) {
-
-    }
-
-    @Override
-    public void selectItem(Item item) {
 
     }
 
@@ -159,5 +92,6 @@ public class MapsActivity extends AppCompatActivity implements IMapActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
 
 }

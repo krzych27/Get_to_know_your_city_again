@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                             String name;
 
+                            assert queryDocumentSnapshots != null;
                             if (!queryDocumentSnapshots.isEmpty()) {
                                 for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                                     UserApi userApi = UserApi.getInstance();
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                                     userApi.setUsername(snapshot.getString("username"));
 
                                     startActivity(new Intent(MainActivity.this,
-                                        MapsActivity.class));
+                                            MapsActivity.class));
                                     finish();
 
 
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                         });
 
-            }else {
+            } else {
 
             }
         };
@@ -118,43 +119,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
-//        providers = Arrays.asList(
-//                new AuthUI.IdpConfig.EmailBuilder().build(),
-//                new AuthUI.IdpConfig.GoogleBuilder().build()
-//        );
-//
-//        showSignInOptions();
     }
-
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()){
-//
-//            case R.id.startButton:{
-//                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-////                startActivity(new Intent(MainActivity.this,
-////                        LoginActivity.class));
-//                startActivity(intent);
-//                finish();
-//            }
-//            case R.id.buttonMap:{
-//                Intent intent = new Intent(this, MapsActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent);
-//            }
-//            case R.id.buttonSign_out:{
-////                AuthUI.getInstance()
-////                        .signOut(MainActivity.this)
-////                        .addOnCompleteListener(task -> {
-////                            buttonSignOut.setEnabled(false);
-////                            buttonMaps.setEnabled(false);
-////                            showSignInOptions();
-////                        });
-//            }
-//        }
-//    }
-
 
 //    private void setupFirebaseAuth(){
 //        Log.d(TAG, "setupFirebaseAuth: started.");
@@ -190,38 +155,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onFailure(@NonNull Exception e) {
-//            Toast.makeText(MainActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
-//    }
 
-//    private void showSignInOptions(){
-//        startActivityForResult(
-//                AuthUI.getInstance().createSignInIntentBuilder()
-//                .setAvailableProviders(providers)
-//                .setTheme(R.style.MyTheme)
-//                .build(),MY_REQUEST_CODE
-//        );
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
-//        super.onActivityResult(requestCode,resultCode,data);
-//        if(requestCode == MY_REQUEST_CODE)
-//        {
-//            IdpResponse response = IdpResponse.fromResultIntent(data);
-//            if(resultCode == RESULT_OK)
-//            {
-//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                Toast.makeText(this,""+user.getEmail(),Toast.LENGTH_SHORT).show();
-//                buttonSignOut.setEnabled(true);
-//                buttonMaps.setEnabled(true);
-//                getStartedButton.setEnabled(true);
-//
-//            }
-//            else {
-//                Toast.makeText(this,""+response.getError().getMessage(),Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
 }

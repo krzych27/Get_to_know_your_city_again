@@ -1,6 +1,7 @@
 package com.Get_to_know_your_city_again.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Location;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.Get_to_know_your_city_again.BuildConfig;
+import com.Get_to_know_your_city_again.PostItemActivity;
 import com.Get_to_know_your_city_again.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -32,7 +34,6 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -77,8 +78,9 @@ public class MapFragment extends Fragment implements LocationListener{
 
         FloatingActionButton fab = rl.findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
-            NewItemDialog dialog = new NewItemDialog();
-            dialog.show( getActivity().getSupportFragmentManager(), getString(R.string.dialog_new_item));
+            Intent intent = new Intent(context,
+                    PostItemActivity.class);
+            startActivity(intent);
         });
 
 
@@ -250,24 +252,24 @@ public class MapFragment extends Fragment implements LocationListener{
     }
 
 
-
-    private class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> >{
+    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> >{
 
         MapFragment mapFragment;
         Locale pCurrent = getResources().getConfiguration().locale;
         private final String userAgent = BuildConfig.APPLICATION_ID;
         GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
 
-        public MyAsyncTask(MapFragment mapFragment) {
-            this.mapFragment = mapFragment;
-        }
+
+//        public MyAsyncTask(MapFragment mapFragment) {
+//            this.mapFragment = mapFragment;
+//        }
 
         protected HashMap<String, Double> doInBackground(String... params) {
 
             List<Address> geoResults = null;
             try {
                 geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
-                cords = mapFragment.getCoordinates(geoResults);
+                cords = getCoordinates(geoResults);
                 Log.d("result",String.valueOf(geocoderNominatim));
 
             } catch (IOException e) {
@@ -290,11 +292,12 @@ public class MapFragment extends Fragment implements LocationListener{
         }
     }
 
-    private HashMap<String, Double> Geocode(String name){
+
+    public HashMap<String, Double> Geocode(String name){
 
         HashMap<String, Double> result = null;
         try {
-            this.myAsyncTask = new MyAsyncTask(this);
+            this.myAsyncTask = new MyAsyncTask();
             this.myAsyncTask.execute(name);
             result=this.myAsyncTask.get();
         }

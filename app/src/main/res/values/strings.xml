@@ -31,5 +31,6 @@
     <string name="create_text">Create Account</string>
     <string name="username_hint">Username</string>
     <string name="get_started">Get started!</string>
+    <string name="item_textView">Add new item</string>
 
 </resources>

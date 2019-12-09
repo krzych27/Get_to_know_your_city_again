@@ -16,13 +16,13 @@ public class Item {
     private String imageUrl;
     private String type;
     private @ServerTimestamp Date timestamp;
-    private String comments_id;
+//    private String comments_id;
     private String item_id;
     private String user_id;
     private String username;
 
     public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl,
-                String type, Date timestamp, String comments_id, String item_id, String user_id,String username) {
+                String type, Date timestamp, String item_id, String user_id,String username) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -30,7 +30,7 @@ public class Item {
         this.imageUrl = imageUrl;
         this.type = type;
         this.timestamp = timestamp;
-        this.comments_id = comments_id;
+//        this.comments_id = comments_id;
         this.item_id = item_id;
         this.user_id = user_id;
         this.username = username;
@@ -88,13 +88,13 @@ public class Item {
         return type;
     }
 
-    public void setComments_id(String comments_id) {
-        this.comments_id = comments_id;
-    }
-
-    public String getComments_id() {
-        return comments_id;
-    }
+//    public void setComments_id(String comments_id) {
+//        this.comments_id = comments_id;
+//    }
+//
+//    public String getComments_id() {
+//        return comments_id;
+//    }
 
     public void setUser_id(String user_id) {
         this.user_id = user_id;
