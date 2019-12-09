@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.Get_to_know_your_city_again.models.Item;
+import com.Get_to_know_your_city_again.ui.home.MapFragment;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +47,6 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
     private static final String TAG = "PostItemActivity";
     private static final int GALLERY_CODE = 1;
-    private Context context;
 
     private Button addItemButton;
     private Button cancelButton;
@@ -84,6 +84,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_item);
+
 
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -192,7 +193,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
                 !TextUtils.isEmpty(description) && !TextUtils.isEmpty(type)
                 && imageUri != null) {
 
-            cords = Geocode(name);
+            cords = Geocode(address);
             if(cords.isEmpty()) {
                 Log.d(TAG,"Hashmap is empty");
             }
@@ -224,13 +225,18 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
                         item.setUsername(currentUserName);
                         item.setUser_id(currentUserId);
 
+                        String item_id = documentReference.getId();
 
                         collectionReference.add(item)
                                 .addOnSuccessListener(documentReference -> {
 
                                     progressBar.setVisibility(View.INVISIBLE);
+                                    MapFragment mapFragment = new MapFragment();
+                                    mapFragment.createMarker(name,address,item_id,lat,lng);
                                     startActivity(new Intent(PostItemActivity.this,
-                                            ItemListActivity.class));
+                                            MapsActivity.class));
+//                                    startActivity(new Intent(PostItemActivity.this,
+//                                            ItemListActivity.class));
                                 })
                                 .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
 
@@ -288,7 +294,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(context, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PostItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
             }
 
             return cords;
@@ -300,7 +306,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
 
             if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(context, "Object not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PostItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
 
 
         }

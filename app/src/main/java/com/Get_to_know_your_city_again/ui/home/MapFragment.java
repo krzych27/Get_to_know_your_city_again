@@ -53,7 +53,6 @@ public class MapFragment extends Fragment implements LocationListener{
     private Bitmap icon;
     private LocationManager locationManager;
     private Locale current;
-    private MyAsyncTask myAsyncTask = null;
     private String name = "Kopalnia Ignacy";
     private double lat;
     private double lng;
@@ -113,9 +112,31 @@ public class MapFragment extends Fragment implements LocationListener{
             map.setMaxZoomLevel((double)20);
         });
 
-        cords = Geocode("Kopalnia Ignacy");
+        // create geoPoint from user location
 
-        createMarker(cords);
+        GeoPoint geoPoint = new GeoPoint(50.095612, 18.542085);
+        map.getController().setCenter(geoPoint);
+        map.getController().animateTo(geoPoint);
+
+        map.invalidate();
+
+        String name = "Rynek Główny w Krakowie";
+        String address = "Rynek Główny 1 Kraków";
+        String userId = "7rt4lXZTgMViXJtW91Bh";
+        double lat1 = 50.061783;
+        double lng1 = 19.9375356;
+
+        String name2 = "Zamek królewski na Wawelu";
+        String address2 = "Wawel 5 Kraków";
+        String userId2 = "ebzeroy9jeOGs7XmNUxI";
+        double lat2 = 50.0550047;
+        double lng2 = 19.9356345;
+
+        createMarker(name,address,userId,lat1,lng1);
+        createMarker(name2,address2,userId2,lat2,lng2);
+
+
+//        createMarker(cords);
         //add to database with name,address,geopoint,description, imageurl,type, user_id
 
 
@@ -187,27 +208,17 @@ public class MapFragment extends Fragment implements LocationListener{
 
     }
 
-    private void addToArrayItem( ArrayList<OverlayItem> items,String name,String address,double lat,
-            double lng ) {
-        OverlayItem item = new OverlayItem(name,address,new GeoPoint(lat,lng));
-        items.add(item);
-    }
 
-    private void createMarker(HashMap<String, Double> cords)
+    public void createMarker(String name,String address,String item_id,double lat,double lng)
     {
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
-        if(cords.isEmpty()) {
-            Log.d(TAG,"Hashmap is empty");
-        }
-
-        double lat = cords.get("lat");
-        double lng = cords.get("lng");
         GeoPoint geoPoint = new GeoPoint(lat,lng);
         Log.d("lat after async",String.valueOf(lat));
         Log.d("lng after async",String.valueOf(lng));
 
-        addToArrayItem(items,"Kopalnia Ignacy","Zabytkowa kopalnia węgla kamiennego w Rybniku",lat,lng);
+        OverlayItem item = new OverlayItem(item_id,name,address,geoPoint);
+        items.add(item);
 
         MyItemizedOverlay myItemizedOverlay = new MyItemizedOverlay(context,items);
 
@@ -250,65 +261,5 @@ public class MapFragment extends Fragment implements LocationListener{
             locationManager.removeUpdates(this);
         }
     }
-
-
-    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> >{
-
-        MapFragment mapFragment;
-        Locale pCurrent = getResources().getConfiguration().locale;
-        private final String userAgent = BuildConfig.APPLICATION_ID;
-        GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
-
-
-//        public MyAsyncTask(MapFragment mapFragment) {
-//            this.mapFragment = mapFragment;
-//        }
-
-        protected HashMap<String, Double> doInBackground(String... params) {
-
-            List<Address> geoResults = null;
-            try {
-                geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
-                cords = getCoordinates(geoResults);
-                Log.d("result",String.valueOf(geocoderNominatim));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(context, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
-            }
-
-            return cords;
-        }
-
-
-        protected void onPostExecute(HashMap<String, Double> cords) {
-            super.onPostExecute(cords);
-
-
-            if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(context, "Object not found", Toast.LENGTH_SHORT).show();
-
-
-        }
-    }
-
-
-    public HashMap<String, Double> Geocode(String name){
-
-        HashMap<String, Double> result = null;
-        try {
-            this.myAsyncTask = new MyAsyncTask();
-            this.myAsyncTask.execute(name);
-            result=this.myAsyncTask.get();
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return result;
-
-    }
-
 
 }

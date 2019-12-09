@@ -21,7 +21,7 @@ public class UserApi extends Application {
         return instance;
     }
 
-    public UserApi(){
+    public UserApi(){  //should be private in singleton
 
     }
     public String getUserId() {
