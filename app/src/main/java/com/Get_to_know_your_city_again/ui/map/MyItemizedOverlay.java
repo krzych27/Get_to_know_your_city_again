@@ -1,12 +1,10 @@
-package com.Get_to_know_your_city_again.ui.home;
+package com.Get_to_know_your_city_again.ui.map;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.widget.Toast;
 
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.List;

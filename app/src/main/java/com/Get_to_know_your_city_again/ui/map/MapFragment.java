@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.ui.home;
+package com.Get_to_know_your_city_again.ui.map;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,25 +7,23 @@ import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.Get_to_know_your_city_again.BuildConfig;
+import com.Get_to_know_your_city_again.ItemListActivity;
 import com.Get_to_know_your_city_again.PostItemActivity;
 import com.Get_to_know_your_city_again.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.location.GeocoderNominatim;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.BoundingBox;
@@ -37,7 +35,6 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +74,8 @@ public class MapFragment extends Fragment implements LocationListener{
 
         FloatingActionButton fab = rl.findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
+//            Intent intent = new Intent(context,
+//                    PostItemActivity.class);
             Intent intent = new Intent(context,
                     PostItemActivity.class);
             startActivity(intent);

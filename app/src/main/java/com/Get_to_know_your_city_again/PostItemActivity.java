@@ -3,7 +3,6 @@ package com.Get_to_know_your_city_again;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.net.Uri;
@@ -22,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.Get_to_know_your_city_again.models.Item;
-import com.Get_to_know_your_city_again.ui.home.MapFragment;
+import com.Get_to_know_your_city_again.ui.map.MapFragment;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -231,12 +230,15 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
                                 .addOnSuccessListener(documentReference -> {
 
                                     progressBar.setVisibility(View.INVISIBLE);
-                                    MapFragment mapFragment = new MapFragment();
-                                    mapFragment.createMarker(name,address,item_id,lat,lng);
-                                    startActivity(new Intent(PostItemActivity.this,
-                                            MapsActivity.class));
+//                                    MapFragment mapFragment = new MapFragment();
+//                                    mapFragment.createMarker(name,address,item_id,lat,lng);
 //                                    startActivity(new Intent(PostItemActivity.this,
-//                                            ItemListActivity.class));
+//                                            MapsActivity.class));
+                                    Intent intent = new Intent(PostItemActivity.this,
+                                            ItemListActivity.class);
+                                    intent.putExtra("name",name);
+                                    startActivity(intent);
+
                                 })
                                 .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
 
