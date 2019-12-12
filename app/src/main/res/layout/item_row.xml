@@ -45,7 +45,7 @@
             android:adjustViewBounds="true"
             android:cropToPadding="true"
             android:scaleType="fitXY"
-            android:src="@drawable/image_cracow"
+            android:src="@drawable/add_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -74,10 +74,11 @@ public class MapFragment extends Fragment implements LocationListener{
 
         FloatingActionButton fab = rl.findViewById(R.id.fab);
         fab.setOnClickListener(v -> {
-//            Intent intent = new Intent(context,
-//                    PostItemActivity.class);
             Intent intent = new Intent(context,
                     PostItemActivity.class);
+//            Intent intent = new Intent(context,
+//                    ItemListActivity.class);
+//            intent.putExtra("name","Bonus");
             startActivity(intent);
         });
 
