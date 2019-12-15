@@ -11,6 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.Get_to_know_your_city_again.ui.map.MapFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -28,6 +29,9 @@ public class MapsActivity extends AppCompatActivity{
     private AppBarConfiguration mAppBarConfiguration;
     private static final String TAG = "MapsActivity";
 
+    private String name_item,description_item;
+    private double lat,lng;
+    private Bundle mArgs = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,25 @@ public class MapsActivity extends AppCompatActivity{
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        name_item = getIntent().getStringExtra("name");
+        description_item = getIntent().getStringExtra("description");
+        if(name_item !=null && description_item!=null) {
+            lng = getIntent().getDoubleExtra("lng", 50.0);
+            lat = getIntent().getDoubleExtra("lat", 50.0);
+        }
+        mArgs.putDouble("lat",lat);
+        mArgs.putDouble("lng",lng);
+        mArgs.putString("name",name_item);
+        mArgs.putString("description",description_item);
+
+        MapFragment mapFragment = new MapFragment();
+        mapFragment.setArguments(mArgs);
+        this.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameMap,mapFragment)
+                .addToBackStack(null)
+                .commit();
 
 
     }

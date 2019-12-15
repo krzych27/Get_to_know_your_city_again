@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.Get_to_know_your_city_again.models.CommentsItem;
 import com.Get_to_know_your_city_again.ui.CommentsRecyclerAdapter;
@@ -28,7 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentsActivity extends AppCompatActivity {
+public class CommentsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG  = "CommentsActivity";
     private ImageButton addCommentButton;
@@ -51,6 +52,7 @@ public class CommentsActivity extends AppCompatActivity {
 
 
     private CommentsRecyclerAdapter commentsRecyclerAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private CollectionReference collectionReference = db.collection("Item");
     private CollectionReference commentCollectionReference;
@@ -66,6 +68,8 @@ public class CommentsActivity extends AppCompatActivity {
         commentInputText = findViewById(R.id.comment_input_text);
         commentText = findViewById(R.id.comment_text);
         progressBar = findViewById(R.id.comment_add_progressBar);
+        mSwipeRefreshLayout = findViewById(R.id.comment_swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -127,43 +131,10 @@ public class CommentsActivity extends AppCompatActivity {
         }else{
             progressBar.setVisibility(View.INVISIBLE);
         }
-        
+
     }
 
-//    protected void updateComment(){
-//
-//        commentCollectionReference.whereEqualTo("item_id", item_id)
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    if (!queryDocumentSnapshots.isEmpty()) {
-//                        for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-//                            CommentsItem comment = items.toObject(CommentsItem.class);
-//                            commentsItems.add(comment);
-//                        }
-//                        Log.d(TAG,"before setAdapter in UpdateComment");
-//                        commentsRecyclerAdapter = new CommentsRecyclerAdapter(CommentsActivity.this,
-//                                commentsItems);
-//                        recyclerView.setAdapter(commentsRecyclerAdapter);
-//                        commentsRecyclerAdapter.notifyDataSetChanged();
-//
-//                    }else {
-//
-//                        Log.d(TAG,"queryDocument is empty UpdateComment");
-//
-//                    }
-//
-//                })
-//                .addOnFailureListener(e -> {
-//
-//                });
-//    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Log.d(TAG," onStart() item_id is " + item_id);
-
+    protected void getComments(){
 
         commentCollectionReference.whereEqualTo("item_id", item_id)
                 .get()
@@ -173,7 +144,7 @@ public class CommentsActivity extends AppCompatActivity {
                             CommentsItem comment = items.toObject(CommentsItem.class);
                             commentsItems.add(comment);
                         }
-                        Log.d(TAG,"before setAdapter");
+                        Log.d(TAG,"before setAdapter in UpdateComment");
                         commentsRecyclerAdapter = new CommentsRecyclerAdapter(CommentsActivity.this,
                                 commentsItems);
                         recyclerView.setAdapter(commentsRecyclerAdapter);
@@ -181,7 +152,7 @@ public class CommentsActivity extends AppCompatActivity {
 
                     }else {
 
-                        Log.d(TAG,"queryDocument is empty");
+                        Log.d(TAG,"queryDocument is empty UpdateComment");
 
                     }
 
@@ -189,6 +160,45 @@ public class CommentsActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                 });
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.d(TAG," onStart() item_id is " + item_id);
+
+        getComments();
+//        commentCollectionReference.whereEqualTo("item_id", item_id)
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    if (!queryDocumentSnapshots.isEmpty()) {
+//                        for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
+//                            CommentsItem comment = items.toObject(CommentsItem.class);
+//                            commentsItems.add(comment);
+//                        }
+//                        Log.d(TAG,"before setAdapter");
+//                        commentsRecyclerAdapter = new CommentsRecyclerAdapter(CommentsActivity.this,
+//                                commentsItems);
+//                        recyclerView.setAdapter(commentsRecyclerAdapter);
+//                        commentsRecyclerAdapter.notifyDataSetChanged();
+//
+//                    }else {
+//
+//                        Log.d(TAG,"queryDocument is empty");
+//
+//                    }
+//
+//                })
+//                .addOnFailureListener(e -> {
+//
+//                });
+
+    }
+
+    @Override
+    public void onRefresh() {
+        getComments();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

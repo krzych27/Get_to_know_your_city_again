@@ -3,6 +3,7 @@ package com.Get_to_know_your_city_again.ui.map;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,15 +14,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.Get_to_know_your_city_again.BuildConfig;
 import com.Get_to_know_your_city_again.ItemListActivity;
+import com.Get_to_know_your_city_again.MapsActivity;
 import com.Get_to_know_your_city_again.PostItemActivity;
 import com.Get_to_know_your_city_again.R;
+import com.Get_to_know_your_city_again.models.Item;
+import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.squareup.picasso.Picasso;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -42,23 +54,33 @@ import java.util.Locale;
 
 public class MapFragment extends Fragment implements LocationListener{
 
+    private final String TAG = "MapFragment";
     private MapView map;
     private Context context;
+    private FloatingActionButton fab_add, fab_item, fab_location;
+    private Animation fab_open, fab_close, fab_clock, fab_anticlock;
+    private boolean isOpen = true;
+
     private GpsMyLocationProvider gpsMyLocationProvider;
     private IMapController mapController;
     private MyLocationNewOverlay myLocationNewOverlay;
-    private Bitmap icon;
+
     private LocationManager locationManager;
     private Locale current;
-    private String name = "Kopalnia Ignacy";
-    private double lat;
-    private double lng;
+
     private ArrayList<Double> coordinates = new ArrayList<>();
 
     private HashMap<String, Double> cords;
 
-    private final String userAgent = BuildConfig.APPLICATION_ID;
-    private final String TAG = "MapFragment Error";
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference collectionReference = db.collection("Item");
+    private List<Item> itemList;
+    private List<com.google.firebase.firestore.GeoPoint> geoPoints;
+
+    private String name_item,description_item;
+    private double lat,lng;
+    private Bundle mArgs;
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -72,30 +94,117 @@ public class MapFragment extends Fragment implements LocationListener{
 
         map = rl.findViewById(R.id.mapView);
 
-        FloatingActionButton fab = rl.findViewById(R.id.fab);
-        fab.setOnClickListener(v -> {
-//            Intent intent = new Intent(context,
-//                    PostItemActivity.class);
+        itemList = new ArrayList<>();
+
+        mArgs = getArguments();
+
+        if(mArgs != null && !mArgs.isEmpty()){
+            name_item = mArgs.getString("name");
+            description_item = mArgs.getString("description");
+            lng = mArgs.getDouble("lng");
+            lat = mArgs.getDouble("lat");
+        }
+
+
+        fab_add = rl.findViewById(R.id.fabAdd);
+        fab_item = rl.findViewById(R.id.fabItem);
+        fab_location = rl.findViewById(R.id.fabLocation);
+        fab_close = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.fab_close);
+        fab_open = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.fab_open);
+        fab_clock = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.fab_rotate_clock);
+        fab_anticlock = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.fab_rotate_anticlock);
+
+
+        fab_add.setOnClickListener(v ->{
+            if (isOpen) {
+
+//                textview_map.setVisibility(View.INVISIBLE);
+//                textview_comm.setVisibility(View.INVISIBLE);
+                fab_location.startAnimation(fab_close);
+                fab_item.startAnimation(fab_close);
+                fab_add.startAnimation(fab_anticlock);
+                fab_location.setClickable(false);
+                fab_item.setClickable(false);
+                isOpen = false;
+            } else {
+//                textview_map.setVisibility(View.VISIBLE);
+//                textview_comm.setVisibility(View.VISIBLE);
+                fab_location.startAnimation(fab_open);
+                fab_item.startAnimation(fab_open);
+                fab_add.startAnimation(fab_clock);
+                fab_location.setClickable(true);
+                fab_item.setClickable(true);
+                isOpen = true;
+            }
+        });
+
+        fab_item.setOnClickListener(v ->{
             Intent intent = new Intent(context,
-                    ItemListActivity.class);
-            intent.putExtra("name","Zazdrość");
+                    PostItemActivity.class);
+//            Intent intent = new Intent(context,
+//                    ItemListActivity.class);
+//            intent.putExtra("name","Zazdrość");
             startActivity(intent);
         });
 
+        fab_location.setOnClickListener(v->{
+//            CommentsActivity dialogComments = new CommentsActivity();
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.dialog_frame,dialogComments)
+//                    .commit();
+            Toast.makeText(context,"This is your location",Toast.LENGTH_LONG).show();
+        });
 
-//        current = getResources().getConfiguration().locale;
 
-       setupMap();
+//        loadItems();
 
-//       double longitude = coordinates.get(1);
-//       double latitude = coordinates.get(0);
-//        Log.d("lat after async",String.valueOf(latitude));
-//        Log.d("lng after async",String.valueOf(longitude));
-
+        setupMap();
 
        return rl;
 
     }
+
+    private void loadItems(){
+
+        collectionReference
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
+                            Item item = items.toObject(Item.class);
+                            itemList.add(item);
+//                            geoPoints.add(item.getGeoPoint());
+                            int count = itemList.size();
+                            Log.d(TAG,"size of itemList is " + String.valueOf(count));
+
+                            Log.d(TAG,"loaded items to itemList");
+
+                            double lat = item.getGeoPoint().getLatitude();
+                            double lng = item.getGeoPoint().getLongitude();
+                            String name_item = item.getName();
+                            String address_item = item.getAddress();
+                            String description_item = item.getDescription();
+                            String item_id = item.getItem_id();
+
+                            Log.d(TAG,"name" + name_item);
+                            Log.d(TAG,"description" + description_item);
+                            Log.d(TAG,"lat" + String.valueOf(lat));
+                            Log.d(TAG,"lng" + String.valueOf(lng));
+
+
+                            addMarker(name_item,description_item,lat,lng);
+
+                        }
+
+                    }else{
+                            Log.d(TAG,"queryDocument is empty");
+
+                    }
+                })
+                .addOnFailureListener(e ->{} );
+    }
+
+
 
 
     // initializing map
@@ -120,20 +229,37 @@ public class MapFragment extends Fragment implements LocationListener{
 
         map.invalidate();
 
-        String name = "Rynek Główny w Krakowie";
-        String address = "Rynek Główny 1 Kraków";
-        String userId = "7rt4lXZTgMViXJtW91Bh";
-        double lat1 = 50.061783;
-        double lng1 = 19.9375356;
+        if(mArgs != null && !mArgs.isEmpty() && lat!=50.0 && lng!=50.0) {
 
-        String name2 = "Zamek królewski na Wawelu";
-        String address2 = "Wawel 5 Kraków";
-        String userId2 = "ebzeroy9jeOGs7XmNUxI";
-        double lat2 = 50.0550047;
-        double lng2 = 19.9356345;
 
-        createMarker(name,address,userId,lat1,lng1);
-        createMarker(name2,address2,userId2,lat2,lng2);
+            Log.d(TAG,"name from postactivity" + name_item);
+            Log.d(TAG,"description from postactivity" + description_item);
+            Log.d(TAG,"lat from postactivity" + String.valueOf(lat));
+            Log.d(TAG,"lng from postactivity" + String.valueOf(lng));
+
+            addMarker(name_item, description_item, lat, lng);
+            GeoPoint geoPointAdded = new GeoPoint(lat, lng);
+            map.getController().setCenter(geoPointAdded);
+            map.getController().animateTo(geoPointAdded);
+        }
+
+//        if(isLoaded)
+//            loadingMarkes();
+
+//        String name = "Rynek Główny w Krakowie";
+//        String address = "Rynek Główny 1 Kraków";
+//        String userId = "7rt4lXZTgMViXJtW91Bh";
+//        double lat1 = 50.061783;
+//        double lng1 = 19.9375356;
+//
+//        String name2 = "Zamek królewski na Wawelu";
+//        String address2 = "Wawel 5 Kraków";
+//        String userId2 = "ebzeroy9jeOGs7XmNUxI";
+//        double lat2 = 50.0550047;
+//        double lng2 = 19.9356345;
+//
+//        createMarker(name,address,userId,lat1,lng1);
+//        createMarker(name2,address2,userId2,lat2,lng2);
 
 
 //        createMarker(cords);
@@ -173,35 +299,50 @@ public class MapFragment extends Fragment implements LocationListener{
 
     }
 
-    private  HashMap<String, Double> getCoordinates( List<Address> geoResults){
+    private void loadingMarkes (){
 
-        Address address = geoResults.get(0);
-        Bundle extras = address.getExtras();
-        Log.d("extras",String.valueOf(extras));
-        BoundingBox bb = extras.getParcelable("boundingbox");
-        Log.d("boundingbox",String.valueOf(bb));
-        double latitude = bb.getLatNorth();
-        double longitude = bb.getLonEast();
+        Log.d(TAG,"loadingMarkes method");
+        int count = itemList.size();
+        Log.d(TAG," loadingMarkes: size of itemList is " + String.valueOf(count));
 
-        Log.d("lat after async",String.valueOf(latitude));
-        Log.d("lng after async",String.valueOf(longitude));
+        for(Item item : itemList){
+            double lat = item.getGeoPoint().getLatitude();
+            double lng = item.getGeoPoint().getLongitude();
+            String name_item = item.getName();
+            String address_item = item.getAddress();
+            String description_item = item.getDescription();
+            String item_id = item.getItem_id();
 
-        HashMap<String, Double> cords = new HashMap<>();
-        cords.put("lat",latitude);
-        cords.put("lng",longitude);
+            Log.d(TAG,"name" + name_item);
+            Log.d(TAG,"description" + description_item);
+            Log.d(TAG,"lat" + String.valueOf(lat));
+            Log.d(TAG,"lng" + String.valueOf(lng));
 
-        return cords;
 
+            addMarker(name_item,description_item,lat,lng);
+
+        }
     }
 
-    private void addMarker(GeoPoint center,String name){
+
+    private void addMarker(String name,String description,double lat,double lng){
         Marker marker = new Marker(map);
-        marker.setPosition(center);
+        GeoPoint geoPoint = new GeoPoint(lat,lng);
+        marker.setPosition(geoPoint);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
         marker.setIcon(getResources().getDrawable(R.drawable.osm_ic_center_map));
         marker.setTitle(name);
-        marker.setImage(getResources().getDrawable(R.drawable.fui_ic_twitter_bird_white_24dp));
+        marker.setSnippet(description);
+        marker.setOnMarkerClickListener((marker1, mapView) ->{
 
+//            String name_item = marker1.getTitle();
+            ItemDialogFragment itemDialogFragment = new ItemDialogFragment();
+            Bundle args = new Bundle();
+            args.putString("name", name);
+            itemDialogFragment.setArguments(args);
+            itemDialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+            return true;
+        });
         map.getOverlays().clear();
         map.getOverlays().add(marker);
         map.invalidate();
@@ -214,8 +355,8 @@ public class MapFragment extends Fragment implements LocationListener{
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
         GeoPoint geoPoint = new GeoPoint(lat,lng);
-        Log.d("lat after async",String.valueOf(lat));
-        Log.d("lng after async",String.valueOf(lng));
+        Log.d(TAG,"lat after async" + String.valueOf(lat));
+        Log.d(TAG,"lng after async" + String.valueOf(lng));
 
         OverlayItem item = new OverlayItem(item_id,name,address,geoPoint);
         items.add(item);
@@ -236,7 +377,7 @@ public class MapFragment extends Fragment implements LocationListener{
     public void onLocationChanged(Location location) {
         GeoPoint center = new GeoPoint(location.getLatitude(),location.getLongitude());
         mapController.animateTo(center);
-        addMarker(center,"My Location");
+//        addMarker(center,"My Location");
     }
 
     @Override
@@ -262,4 +403,10 @@ public class MapFragment extends Fragment implements LocationListener{
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+//        loadItems();
+
+    }
 }

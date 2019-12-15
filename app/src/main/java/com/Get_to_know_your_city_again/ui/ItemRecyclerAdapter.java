@@ -58,7 +58,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         Log.d(TAG,"item_id "+ viewHolder.item_id);
         viewHolder.name.setText(item.getName());
         viewHolder.address.setText(item.getAddress());
-        viewHolder.description.setText(item.getDecription());
+        viewHolder.description.setText(item.getDescription());
         viewHolder.type.setText(item.getType());
         viewHolder.addedBy.setText(item.getUsername());
         imageUrl = item.getImageUrl();
@@ -68,7 +68,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
                 .load(imageUrl)
                 .placeholder(R.drawable.add_image)
                 .fit()
-                .into(viewHolder.image); //mistake
+                .into(viewHolder.image);
 
 //        String pattern = "HH:mm:ss dd/MM/yyyy";
 //        DateFormat df = new SimpleDateFormat(pattern,locale);

@@ -21,6 +21,7 @@ public class Item {
     private  @DocumentId String item_id;
     private String user_id;
     private String username;
+//    private int likes_count; // should be add
 
     public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl,
                 String type, Date timestamp, String item_id, String user_id,String username) {
@@ -35,6 +36,7 @@ public class Item {
         this.item_id = item_id;
         this.user_id = user_id;
         this.username = username;
+//        this.likes_count=likes_count;
     }
 
     public Item() {
@@ -60,7 +62,7 @@ public class Item {
         this.description = description;
     }
 
-    public String getDecription() {
+    public String getDescription() {
         return description;
     }
 

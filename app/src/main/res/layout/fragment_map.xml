@@ -16,13 +16,77 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab"
+                <LinearLayout
+                    android:id="@+id/linearLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:layout_margin="@dimen/fab_margin"
-                    app:srcCompat="@android:drawable/ic_input_add" />
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fabLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/icon_comments"
+                            android:tint="@color/grey_80"
+                            app:backgroundTint="@color/grey_20"
+                            app:fabSize="mini"
+                            app:rippleColor="@color/white" />
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fabItem"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/icon_goto_map"
+                            android:tint="@color/grey_80"
+                            app:backgroundTint="@color/grey_20"
+                            app:fabSize="mini"
+                            app:rippleColor="@color/white" />
+
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/fabAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|end"
+                            android:layout_margin="@dimen/fab_margin"
+                            app:srcCompat="@android:drawable/ic_input_add" />
+
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textview_map"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="#212121"-->
+<!--                            android:padding="8dp"-->
+<!--                            android:text="Go to map"-->
+<!--                            android:textColor="#ffffff"-->
+<!--                            android:visibility="invisible" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textview_comm"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="#212121"-->
+<!--                            android:padding="8dp"-->
+<!--                            android:text="Comments"-->
+<!--                            android:textColor="#ffffff"-->
+<!--                            android:visibility="invisible"-->
+<!--                            android:layout_gravity="center_horizontal"/>-->
+
+                </LinearLayout>
+
+<!--                <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                    android:id="@+id/fab"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="bottom|end"-->
+<!--                    android:layout_margin="@dimen/fab_margin"-->
+<!--                    app:srcCompat="@android:drawable/ic_input_add" />-->
 
         </FrameLayout>
 

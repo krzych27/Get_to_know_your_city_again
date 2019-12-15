@@ -230,14 +230,25 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
                                 .addOnSuccessListener(documentReference -> {
 
                                     progressBar.setVisibility(View.INVISIBLE);
-//                                    MapFragment mapFragment = new MapFragment();
-//                                    mapFragment.createMarker(name,address,item_id,lat,lng);
-//                                    startActivity(new Intent(PostItemActivity.this,
-//                                            MapsActivity.class));
 
+//                                    MapFragment mapFragment = new MapFragment();
+//                                    Bundle args = new Bundle();
+//                                    args.putDouble("lat",lat);
+//                                    args.putDouble("lng",lng);
+//                                    args.putString("name",name);
+//                                    args.putString("description",description);
+//                                    mapFragment.setArguments(args);
+//                                    getSupportFragmentManager().beginTransaction()
+//                                            .replace(R.id.frameMap,mapFragment,mapFragment.getClass().getSimpleName())
+//                                            .addToBackStack(null)
+//                                            .commit();
                                     Intent intent = new Intent(PostItemActivity.this,
-                                            ItemListActivity.class);
+                                            MapsActivity.class);
+//                                    intent.putExtra("name",name);
+                                    intent.putExtra("lat",lat);
+                                    intent.putExtra("lng",lng);
                                     intent.putExtra("name",name);
+                                    intent.putExtra("description",description);
                                     startActivity(intent);
 
                                 })
