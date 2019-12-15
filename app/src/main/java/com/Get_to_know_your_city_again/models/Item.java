@@ -1,5 +1,6 @@
 package com.Get_to_know_your_city_again.models;
 
+import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.ServerTimestamp;
@@ -17,7 +18,7 @@ public class Item {
     private String type;
     private @ServerTimestamp Date timestamp;
 //    private String comments_id;
-    private String item_id;
+    private  @DocumentId String item_id;
     private String user_id;
     private String username;
 

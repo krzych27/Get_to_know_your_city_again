@@ -71,9 +71,10 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     private StorageReference storageReference;
 
     private CollectionReference collectionReference = db.collection("Item");
+    private DocumentReference documentReference = db.collection("Item").document();
     private Uri imageUri;
 
-    private DocumentReference documentReference = db.collection("Item").document();
+
 
     private MyAsyncTask myAsyncTask = null;
     private HashMap<String, Double> cords;
@@ -202,6 +203,8 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
             geoPoint = new GeoPoint(lat,lng);
 
+
+
             final StorageReference filepath = storageReference
                     .child("item_images")
                     .child("object_image_" + Timestamp.now().getSeconds());
@@ -215,7 +218,6 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
                         item.setAddress(address);
                         item.setDescription(description);
                         item.setType(type);
-                        item.setItem_id(documentReference.getId());
                         item.setImageUrl(imageUrl);
 
                         // upload coordinates from geocoding
@@ -223,8 +225,6 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
                         item.setUsername(currentUserName);
                         item.setUser_id(currentUserId);
-
-                        String item_id = documentReference.getId();
 
                         collectionReference.add(item)
                                 .addOnSuccessListener(documentReference -> {
@@ -234,6 +234,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 //                                    mapFragment.createMarker(name,address,item_id,lat,lng);
 //                                    startActivity(new Intent(PostItemActivity.this,
 //                                            MapsActivity.class));
+
                                     Intent intent = new Intent(PostItemActivity.this,
                                             ItemListActivity.class);
                                     intent.putExtra("name",name);

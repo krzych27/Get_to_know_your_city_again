@@ -32,5 +32,8 @@
     <string name="username_hint">Username</string>
     <string name="get_started">Get started!</string>
     <string name="item_textView">Add new item</string>
+    <string name="comment_tittle">Comments</string>
+    <string name="comment_input_text">write a comment here...</string>
+    <string name="added_by">Added by</string>
 
 </resources>

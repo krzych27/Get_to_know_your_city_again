@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comment_recyclerView"
+        android:layout_width="423dp"
+        android:layout_height="565dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.496" />
+
+    <ProgressBar
+        android:id="@+id/comment_add_progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="115dp"
+        android:layout_height="133dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout3" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/comment_tittle"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/linkBlue"
+            android:textSize="24pt" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="558dp"
+        android:elevation="10dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/comment_recyclerView"
+        app:layout_constraintVertical_bias="0.846">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comment_input_text"
+            android:layout_width="319dp"
+            android:layout_height="79dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:hint="@string/comment_input_text"
+            android:imeOptions="actionNext"
+            android:inputType="textMultiLine"
+            android:padding="15dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="19sp" />
+
+        <ImageButton
+            android:id="@+id/add_comment_button"
+            android:layout_width="73dp"
+            android:layout_height="80dp"
+            android:layout_gravity="end"
+            android:background="@android:color/transparent"
+            android:scaleType="center"
+            android:src="@drawable/add_comment" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

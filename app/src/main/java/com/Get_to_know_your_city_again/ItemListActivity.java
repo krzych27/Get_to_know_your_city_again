@@ -38,7 +38,6 @@ public class ItemListActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private StorageReference storageReference;
     private List<Item> itemList;
     private RecyclerView recyclerView;
     private ItemRecyclerAdapter itemRecyclerAdapter;
@@ -47,6 +46,7 @@ public class ItemListActivity extends AppCompatActivity {
     private TextView noItemEntry;
 
     private String nameItem;
+    private String item_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +92,12 @@ public class ItemListActivity extends AppCompatActivity {
         });
 
         fab_comm.setOnClickListener(v->{
-            DialogComments dialogComments = new DialogComments();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.dialog_frame,dialogComments)
-                    .commit();
-//            Intent intent = new Intent(ItemListActivity.this,MapsActivity.class);
-//            startActivity(intent);
+//            CommentsActivity dialogComments = new CommentsActivity();
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.dialog_frame,dialogComments)
+//                    .commit();
+            Intent intent = new Intent(ItemListActivity.this,MapsActivity.class);
+            startActivity(intent);
         });
 
 
