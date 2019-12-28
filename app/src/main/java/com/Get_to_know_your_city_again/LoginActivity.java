@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         final String currentUserId = user.getUid();
 
                         collectionReference
-                                .whereEqualTo("userId", currentUserId)
+                                .whereEqualTo("user_id", currentUserId)
                                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
 
                                     if (e != null) {
@@ -109,10 +109,12 @@ public class LoginActivity extends AppCompatActivity {
                                         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                                             UserApi userApi = UserApi.getInstance();
                                             userApi.setUsername(snapshot.getString("username"));
-                                            userApi.setUserId(snapshot.getString("userId"));
+                                            userApi.setUserId(snapshot.getString("user_id"));
+                                            userApi.setEmail(snapshot.getString("email"));
 
                                             Log.d(TAG,"username"+snapshot.getString("username"));
                                             Log.d(TAG,"userId"+snapshot.getString("userId"));
+                                            Log.d(TAG,"email"+snapshot.getString("email"));
 
                                             Intent intent = new Intent(LoginActivity.this,
                                                     MapsActivity.class);
@@ -124,7 +126,12 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 });
                     })
-                    .addOnFailureListener(e -> progressBar.setVisibility(View.INVISIBLE));
+                    .addOnFailureListener(e ->{
+                        progressBar.setVisibility(View.INVISIBLE);
+//                        Toast.makeText(LoginActivity.this, "Wrong entered data",
+//                                Toast.LENGTH_LONG).show();
+
+                    });
 
         }else {
 

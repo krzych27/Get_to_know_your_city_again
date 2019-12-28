@@ -13,9 +13,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.Get_to_know_your_city_again.ItemListActivity;
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.models.Item;
+import com.Get_to_know_your_city_again.model.Item;
 import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

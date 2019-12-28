@@ -18,26 +18,27 @@
         tools:layout="@layout/fragment_user_list_item" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.Get_to_know_your_city_again.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_list_favourites"
+        android:name="com.Get_to_know_your_city_again.ui.favouritesUserListItems.FavouritesUserListItemsFragment"
+        android:label="@string/menu_list_favourites"
+        tools:layout="@layout/fragment_list_favourites" />
 
-    <fragment
-        android:id="@+id/nav_tools"
-        android:name="com.Get_to_know_your_city_again.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
 
-    <fragment
-        android:id="@+id/nav_share"
-        android:name="com.Get_to_know_your_city_again.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
+<!--    <fragment-->
+<!--        android:id="@+id/nav_logout"-->
+<!--        android:name="com.Get_to_know_your_city_again.ui.tools.ToolsFragment"-->
+<!--        android:label="@string/menu_logout"-->
+<!--        tools:layout="@layout/fragment_logout" />-->
 
-    <fragment
-        android:id="@+id/nav_send"
-        android:name="com.Get_to_know_your_city_again.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
+<!--    <fragment-->
+<!--        android:id="@+id/nav_share"-->
+<!--        android:name="com.Get_to_know_your_city_again.ui.share.ShareFragment"-->
+<!--        android:label="@string/menu_share"-->
+<!--        tools:layout="@layout/fragment_share" />-->
+
+<!--    <fragment-->
+<!--        android:id="@+id/nav_send"-->
+<!--        android:name="com.Get_to_know_your_city_again.ui.send.SendFragment"-->
+<!--        android:label="@string/menu_send"-->
+<!--        tools:layout="@layout/fragment_send" />-->
 </navigation>

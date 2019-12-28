@@ -41,12 +41,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class PostItemActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditItemActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "PostItemActivity";
+    private static final String TAG = "EditItemActivity";
     private static final int GALLERY_CODE = 1;
 
-    private Button addItemButton;
+    private Button editItemButton;
     private Button cancelButton;
     private ProgressBar progressBar;
     private ImageView addPhotoButton;
@@ -83,7 +83,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_item);
+        setContentView(R.layout.activity_edit_item);
 
 
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -124,11 +124,11 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
         Log.d(TAG,"Selected type is" + typeItem);
 
-        addItemButton = findViewById(R.id.add_item_button);
+        editItemButton = findViewById(R.id.edit_item_button);
         cancelButton = findViewById(R.id.cancel_button);
         imageView = findViewById(R.id.item_CameraButton);
 
-        addItemButton.setOnClickListener(this);
+        editItemButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         imageView.setOnClickListener(this);
 
@@ -154,14 +154,14 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
 
-            case R.id.add_item_button:{
-                SaveItem();
+            case R.id.edit_item_button:{
+                editItem();
 
                 break;
             }
 
             case R.id.cancel_button:{
-                Intent intent = new Intent(PostItemActivity.this,
+                Intent intent = new Intent(EditItemActivity.this,
                         MapsActivity.class);
                 startActivity(intent);
                 break;
@@ -176,7 +176,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void SaveItem(){
+    private void editItem(){
 
         final String name = nameEditText.getText().toString().trim();
         final String street = streetEditText.getText().toString().trim();
@@ -237,7 +237,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
                                     progressBar.setVisibility(View.INVISIBLE);
 
-                                    Intent intent = new Intent(PostItemActivity.this,
+                                    Intent intent = new Intent(EditItemActivity.this,
                                             MapsActivity.class);
 
                                     intent.putExtra("lat",lat);
@@ -304,7 +304,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(PostItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
             }
 
             return cords;
@@ -316,7 +316,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
 
             if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(PostItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
 
 
         }
@@ -366,3 +366,4 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 }
+

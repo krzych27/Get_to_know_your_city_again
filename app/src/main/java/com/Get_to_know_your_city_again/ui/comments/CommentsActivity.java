@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again;
+package com.Get_to_know_your_city_again.ui.comments;
 
 
 import android.os.Bundle;
@@ -16,9 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.Get_to_know_your_city_again.models.CommentsItem;
-import com.Get_to_know_your_city_again.ui.CommentsRecyclerAdapter;
-import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
+import com.Get_to_know_your_city_again.R;
+import com.Get_to_know_your_city_again.model.CommentsItem;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

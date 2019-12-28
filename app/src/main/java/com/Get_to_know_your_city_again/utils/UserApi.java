@@ -11,6 +11,7 @@ public class UserApi extends Application {
 
     private String username;
     private String userId;
+    private String email;
     private static UserApi instance;
 
 
@@ -24,6 +25,15 @@ public class UserApi extends Application {
     public UserApi(){  //should be private in singleton
 
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getUserId() {
         return userId;
     }

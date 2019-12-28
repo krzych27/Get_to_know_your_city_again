@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.ui;
+package com.Get_to_know_your_city_again.ui.comments;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.models.CommentsItem;
+import com.Get_to_know_your_city_again.model.CommentsItem;
 
 import java.text.DateFormat;
 import java.util.Date;

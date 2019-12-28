@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.models;
+package com.Get_to_know_your_city_again.model;
 
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.GeoPoint;
@@ -11,7 +11,8 @@ import java.util.Date;
 public class Item {
 
     private String name;
-    private String address;
+    private String street;
+    private String city;
     private String description;
     private GeoPoint geoPoint;
     private String imageUrl;
@@ -23,11 +24,12 @@ public class Item {
     private String username;
 //    private int likes_count; // should be add
 
-    public Item(String name, String description, String address, GeoPoint geoPoint, String imageUrl,
+    public Item(String name, String description, String street,String city, GeoPoint geoPoint, String imageUrl,
                 String type, Date timestamp, String item_id, String user_id,String username) {
         this.name = name;
         this.description = description;
-        this.address = address;
+        this.street = street;
+        this.city=city;
         this.geoPoint = geoPoint;
         this.imageUrl = imageUrl;
         this.type = type;
@@ -50,12 +52,20 @@ public class Item {
         return name;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public String getStreet() {
+        return street;
     }
 
-    public String getAddress() {
-        return address;
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setDescription(String description) {

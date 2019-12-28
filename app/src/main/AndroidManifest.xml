@@ -28,7 +28,8 @@
 
         <activity android:name=".ItemListActivity"></activity>
         <activity android:name=".PostItemActivity" />
-        <activity android:name=".CommentsActivity"/>
+        <activity android:name=".EditItemActivity"/>
+        <activity android:name=".ui.comments.CommentsActivity"/>
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".LoginActivity" />
         <activity

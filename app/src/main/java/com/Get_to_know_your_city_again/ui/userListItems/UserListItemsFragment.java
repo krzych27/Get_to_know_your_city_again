@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.models.Item;
+import com.Get_to_know_your_city_again.model.Item;
 import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;

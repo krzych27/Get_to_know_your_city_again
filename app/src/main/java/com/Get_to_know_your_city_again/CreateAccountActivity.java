@@ -1,6 +1,5 @@
 package com.Get_to_know_your_city_again;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,21 +12,15 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.Get_to_know_your_city_again.model.Users;
 import com.Get_to_know_your_city_again.utils.UserApi;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class CreateAccountActivity extends AppCompatActivity {
@@ -39,6 +32,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Users");
+    private DocumentReference documentReference = db.collection("Users").document();
 
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -78,12 +72,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString().trim();
                 String username = userNameEditText.getText().toString().trim();
 
-                createUserEmailAccount(email,password,username);
+                if( password.length() < 8){
+                    Toast.makeText(CreateAccountActivity.this,"Passwords must be at least 8 characters",Toast.LENGTH_LONG).show();
+                }else{
+                    createUserEmailAccount(email,password,username);
 
-                Log.d(TAG,"username in createAccountButton"+username);
-                Log.d(TAG,"email in createAccountButton"+ email);
-
-
+                    Log.d(TAG,"username in createAccountButton"+username);
+                    Log.d(TAG,"email in createAccountButton"+ email);
+                }
             }else{
                 Toast.makeText(CreateAccountActivity.this,"Empty fields not allowed",Toast.LENGTH_LONG).show();
             }
@@ -104,11 +100,15 @@ public class CreateAccountActivity extends AppCompatActivity {
                             assert currentUser != null;
                             final String currentUserId = currentUser.getUid();
 
-                            Map<String,String> userObject = new HashMap<>();
-                            userObject.put("userId",currentUserId);
-                            userObject.put("username",username);
+                            Users users = new Users();
+                            users.setUser_id(currentUserId);
+                            users.setUsername(username);
+                            users.setEmail(email);
+//                            Map<String,String> userObject = new HashMap<>();
+//                            userObject.put("userId",currentUserId);
+//                            userObject.put("username",username);
 
-                            collectionReference.add(userObject)
+                            collectionReference.add(users)
                                     .addOnSuccessListener(documentReference -> documentReference.get()
                                             .addOnCompleteListener(task1 -> {
                                                 if(Objects.requireNonNull(task1.getResult()).exists()){
@@ -119,9 +119,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                     UserApi userApi = UserApi.getInstance();
                                                     userApi.setUserId(currentUserId);
                                                     userApi.setUsername(name);
+                                                    userApi.setEmail(email);
 
                                                     Log.d(TAG,"username"+name);
                                                     Log.d(TAG,"userId"+ currentUserId);
+                                                    Log.d(TAG,"email"+email);
 
                                                     Intent intent = new Intent(CreateAccountActivity.this,
                                                             MapsActivity.class);
@@ -130,6 +132,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                                                     intent.putExtra("username", name);
                                                     intent.putExtra("userId", currentUserId);
+                                                    intent.putExtra("email",email);
                                                     startActivity(intent);
 
                                                 }else{

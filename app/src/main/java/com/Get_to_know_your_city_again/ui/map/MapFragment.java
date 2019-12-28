@@ -2,9 +2,6 @@ package com.Get_to_know_your_city_again.ui.map;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,6 +9,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -19,29 +18,25 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.Get_to_know_your_city_again.BuildConfig;
-import com.Get_to_know_your_city_again.ItemListActivity;
-import com.Get_to_know_your_city_again.MapsActivity;
 import com.Get_to_know_your_city_again.PostItemActivity;
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.models.Item;
-import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
+import com.Get_to_know_your_city_again.model.Item;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.squareup.picasso.Picasso;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -77,8 +72,8 @@ public class MapFragment extends Fragment implements LocationListener{
     private List<Item> itemList;
     private List<com.google.firebase.firestore.GeoPoint> geoPoints;
 
-    private String name_item,description_item;
-    private double lat,lng;
+    private String name_item,address_item;
+    private double lat,lng,searched_lat,searched_lng;
     private Bundle mArgs;
 
 
@@ -92,6 +87,8 @@ public class MapFragment extends Fragment implements LocationListener{
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
+        setHasOptionsMenu(true);
+
         map = rl.findViewById(R.id.mapView);
 
         itemList = new ArrayList<>();
@@ -100,9 +97,11 @@ public class MapFragment extends Fragment implements LocationListener{
 
         if(mArgs != null && !mArgs.isEmpty()){
             name_item = mArgs.getString("name");
-            description_item = mArgs.getString("description");
+            address_item = mArgs.getString("address");
             lng = mArgs.getDouble("lng");
             lat = mArgs.getDouble("lat");
+            searched_lng = mArgs.getDouble("searched_lng");
+            searched_lat = mArgs.getDouble("searched_lat");
         }
 
 
@@ -148,10 +147,7 @@ public class MapFragment extends Fragment implements LocationListener{
         });
 
         fab_location.setOnClickListener(v->{
-//            CommentsActivity dialogComments = new CommentsActivity();
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.dialog_frame,dialogComments)
-//                    .commit();
+
             Toast.makeText(context,"This is your location",Toast.LENGTH_LONG).show();
         });
 
@@ -162,6 +158,13 @@ public class MapFragment extends Fragment implements LocationListener{
 
        return rl;
 
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem item=menu.findItem(R.id.action_search);
+        if(item!=null)
+            item.setVisible(true);
     }
 
     private void loadItems(){
@@ -182,7 +185,7 @@ public class MapFragment extends Fragment implements LocationListener{
                             double lat = item.getGeoPoint().getLatitude();
                             double lng = item.getGeoPoint().getLongitude();
                             String name_item = item.getName();
-                            String address_item = item.getAddress();
+                            String address_item = item.getStreet() + " " + item.getCity();
                             String description_item = item.getDescription();
                             String item_id = item.getItem_id();
 
@@ -190,7 +193,6 @@ public class MapFragment extends Fragment implements LocationListener{
                             Log.d(TAG,"description" + description_item);
                             Log.d(TAG,"lat" + String.valueOf(lat));
                             Log.d(TAG,"lng" + String.valueOf(lng));
-
 
                             addMarker(name_item,description_item,lat,lng);
 
@@ -214,11 +216,11 @@ public class MapFragment extends Fragment implements LocationListener{
             map.getTileProvider().clearTileCache();
             map.getTileProvider().setTileSource(TileSourceFactory.MAPNIK);
             map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
-            map.getController().setZoom((double)12);
+            map.getController().setZoom((double) 12);
             map.setMultiTouchControls(true);
             map.setTilesScaledToDpi(true);
-            map.setMinZoomLevel((double)7);
-            map.setMaxZoomLevel((double)20);
+            map.setMinZoomLevel((double) 7);
+            map.setMaxZoomLevel((double) 20);
         });
 
         // create geoPoint from user location
@@ -229,41 +231,30 @@ public class MapFragment extends Fragment implements LocationListener{
 
         map.invalidate();
 
-        if(mArgs != null && !mArgs.isEmpty() && lat!=50.0 && lng!=50.0) {
+        if(mArgs != null && !mArgs.isEmpty() && searched_lat!=0 && searched_lng!=0){
+            GeoPoint geo_point_searched = new GeoPoint(searched_lat, searched_lng);
+            map.getController().setCenter(geo_point_searched);
+            map.getController().animateTo(geo_point_searched);
+
+            map.invalidate();
+        }
+
+        if(mArgs != null && !mArgs.isEmpty() && lat!=50.061219 && lat!=0 && lng!=19.936804 && lng!=0) {
 
 
             Log.d(TAG,"name from postactivity" + name_item);
-            Log.d(TAG,"description from postactivity" + description_item);
+            Log.d(TAG,"address from postactivity" + address_item);
             Log.d(TAG,"lat from postactivity" + String.valueOf(lat));
             Log.d(TAG,"lng from postactivity" + String.valueOf(lng));
 
-            addMarker(name_item, description_item, lat, lng);
+//            addMarker(name_item, description_item, lat, lng);
             GeoPoint geoPointAdded = new GeoPoint(lat, lng);
+            createMarker(name_item,address_item,geoPointAdded);
+
             map.getController().setCenter(geoPointAdded);
             map.getController().animateTo(geoPointAdded);
         }
 
-//        if(isLoaded)
-//            loadingMarkes();
-
-//        String name = "Rynek Główny w Krakowie";
-//        String address = "Rynek Główny 1 Kraków";
-//        String userId = "7rt4lXZTgMViXJtW91Bh";
-//        double lat1 = 50.061783;
-//        double lng1 = 19.9375356;
-//
-//        String name2 = "Zamek królewski na Wawelu";
-//        String address2 = "Wawel 5 Kraków";
-//        String userId2 = "ebzeroy9jeOGs7XmNUxI";
-//        double lat2 = 50.0550047;
-//        double lng2 = 19.9356345;
-//
-//        createMarker(name,address,userId,lat1,lng1);
-//        createMarker(name2,address2,userId2,lat2,lng2);
-
-
-//        createMarker(cords);
-        //add to database with name,address,geopoint,description, imageurl,type, user_id
 
 
 
@@ -309,7 +300,7 @@ public class MapFragment extends Fragment implements LocationListener{
             double lat = item.getGeoPoint().getLatitude();
             double lng = item.getGeoPoint().getLongitude();
             String name_item = item.getName();
-            String address_item = item.getAddress();
+            String address_item = item.getStreet() + " " + item.getCity();
             String description_item = item.getDescription();
             String item_id = item.getItem_id();
 
@@ -333,6 +324,7 @@ public class MapFragment extends Fragment implements LocationListener{
         marker.setIcon(getResources().getDrawable(R.drawable.osm_ic_center_map));
         marker.setTitle(name);
         marker.setSnippet(description);
+
         marker.setOnMarkerClickListener((marker1, mapView) ->{
 
 //            String name_item = marker1.getTitle();
@@ -350,22 +342,35 @@ public class MapFragment extends Fragment implements LocationListener{
     }
 
 
-    public void createMarker(String name,String address,String item_id,double lat,double lng)
+    public void createMarker(String name,String address,GeoPoint geoPoint)
     {
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
-        GeoPoint geoPoint = new GeoPoint(lat,lng);
-        Log.d(TAG,"lat after async" + String.valueOf(lat));
-        Log.d(TAG,"lng after async" + String.valueOf(lng));
+//        GeoPoint geoPoint = new GeoPoint(lat,lng);
 
-        OverlayItem item = new OverlayItem(item_id,name,address,geoPoint);
+        OverlayItem item = new OverlayItem(name,address,geoPoint);
         items.add(item);
+        ItemizedOverlayWithFocus<OverlayItem> itemItemizedOverlayWithFocus = new ItemizedOverlayWithFocus<OverlayItem>(items,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        Toast.makeText(context,""+item.getTitle()+"\n"+item.getSnippet(),Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        ItemDialogFragment itemDialogFragment = new ItemDialogFragment();
+                        Bundle args = new Bundle();
+                        args.putString("name", name);
+                        itemDialogFragment.setArguments(args);
+                        itemDialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+                        return true;
+                    }
+                }, context);
 
-        MyItemizedOverlay myItemizedOverlay = new MyItemizedOverlay(context,items);
 
-        myItemizedOverlay.setFocusItemsOnTap(true);
-        map.getOverlays().add(myItemizedOverlay);
-
+        itemItemizedOverlayWithFocus.setFocusItemsOnTap(true);
+        map.getOverlays().add(itemItemizedOverlayWithFocus);
         map.getController().setCenter(geoPoint);
         map.getController().animateTo(geoPoint);
 

@@ -1,33 +1,44 @@
-package com.Get_to_know_your_city_again;
+package com.Get_to_know_your_city_again.ui.favouritesUserListItems;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-
+import com.Get_to_know_your_city_again.R;
 import com.Get_to_know_your_city_again.model.Item;
 import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
+import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemListActivity extends AppCompatActivity {
+public class FavouritesUserListItemsFragment extends Fragment {
 
-    private static final String TAG = "ItemListActivity";
-
+    private static final String TAG = "FavouritesItemsFragment";
+    private Context context;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private StorageReference storageReference;
     private List<Item> itemList;
     private RecyclerView recyclerView;
     private ItemRecyclerAdapter itemRecyclerAdapter;
@@ -35,38 +46,36 @@ public class ItemListActivity extends AppCompatActivity {
     private CollectionReference collectionReference = db.collection("Item");
     private TextView noItemEntry;
 
-    private String nameItem;
-    private String item_id;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_list);
 
+        View rl = inflater.inflate(R.layout.fragment_list_favourites, container, false);
+        if(getActivity() != null)
+            context = getActivity();
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
-        noItemEntry = findViewById(R.id.no_list_items2);
+        noItemEntry = rl.findViewById(R.id.no_list_items);
         itemList = new ArrayList<>();
 
-        nameItem = getIntent().getStringExtra("name");
-
-        recyclerView = findViewById(R.id.recyclerView2);
+        recyclerView = rl.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
+        return rl;
     }
 
-
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        Log.d(TAG,"nameItem is " + nameItem);
+        String userId = UserApi.getInstance().getUserId();
+        String name_city;
+        Log.d(TAG,"userId is" + userId);
 
-
-        collectionReference.whereEqualTo("name", nameItem)
+        collectionReference.whereEqualTo("user_id", UserApi.getInstance()
+                .getUserId())
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -74,11 +83,9 @@ public class ItemListActivity extends AppCompatActivity {
                             Item item = items.toObject(Item.class);
                             itemList.add(item);
                         }
-                        Log.d(TAG,"before setAdapter");
-                        itemRecyclerAdapter = new ItemRecyclerAdapter(ItemListActivity.this,
-                                itemList);
+
+                        itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemList);
                         recyclerView.setAdapter(itemRecyclerAdapter);
-                        itemRecyclerAdapter.notifyDataSetChanged();
 
                     }else {
                         noItemEntry.setVisibility(View.VISIBLE);
@@ -90,8 +97,6 @@ public class ItemListActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                 });
-
-
 
     }
 }
