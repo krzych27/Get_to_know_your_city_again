@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.CommentsItem;
+import com.Get_to_know_your_city_again.models.CommentsItem;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,7 +53,7 @@ public class CommentsActivity extends AppCompatActivity implements SwipeRefreshL
     private CommentsRecyclerAdapter commentsRecyclerAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private CollectionReference collectionReference = db.collection("Item");
+    private CollectionReference collectionReference = db.collection("Items");
     private CollectionReference commentCollectionReference;
 
 
@@ -168,30 +168,6 @@ public class CommentsActivity extends AppCompatActivity implements SwipeRefreshL
         Log.d(TAG," onStart() item_id is " + item_id);
 
         getComments();
-//        commentCollectionReference.whereEqualTo("item_id", item_id)
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    if (!queryDocumentSnapshots.isEmpty()) {
-//                        for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-//                            CommentsItem comment = items.toObject(CommentsItem.class);
-//                            commentsItems.add(comment);
-//                        }
-//                        Log.d(TAG,"before setAdapter");
-//                        commentsRecyclerAdapter = new CommentsRecyclerAdapter(CommentsActivity.this,
-//                                commentsItems);
-//                        recyclerView.setAdapter(commentsRecyclerAdapter);
-//                        commentsRecyclerAdapter.notifyDataSetChanged();
-//
-//                    }else {
-//
-//                        Log.d(TAG,"queryDocument is empty");
-//
-//                    }
-//
-//                })
-//                .addOnFailureListener(e -> {
-//
-//                });
 
     }
 

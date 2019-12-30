@@ -1,5 +1,6 @@
 package com.Get_to_know_your_city_again;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.os.AsyncTask;
@@ -8,12 +9,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+import androidx.core.view.MenuItemCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.Get_to_know_your_city_again.ui.items.PostItemActivity;
 import com.Get_to_know_your_city_again.ui.map.MapFragment;
+import com.Get_to_know_your_city_again.ui.registerAndLogin.LoginActivity;
+import com.Get_to_know_your_city_again.utils.GeocodingAsyncTask;
+import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -29,13 +35,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.osmdroid.bonuspack.location.GeocoderNominatim;
-import org.osmdroid.util.BoundingBox;
-import org.osmdroid.util.GeoPoint;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MapsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
@@ -47,9 +52,12 @@ public class MapsActivity extends AppCompatActivity implements SearchView.OnQuer
     private String item_name, item_address,user_name,user_email;
     private double lat,lng;
     private Bundle mArgs = new Bundle();
-    private String search_string;
 
-    private MyAsyncTask myAsyncTask = null;
+    //    private MyAsyncTask myAsyncTask = null;
+    private GeocodingAsyncTask geocodingAsyncTask = null;
+    private Context context;
+    private Locale current;
+    private String userAgent;
     private HashMap<String, Double> cords;
 
 
@@ -57,6 +65,10 @@ public class MapsActivity extends AppCompatActivity implements SearchView.OnQuer
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+//        context = getBaseContext();
+//
+//        userAgent = BuildConfig.APPLICATION_ID;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -75,8 +87,11 @@ public class MapsActivity extends AppCompatActivity implements SearchView.OnQuer
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        user_name = getIntent().getStringExtra("username");
-        user_email = getIntent().getStringExtra("email");
+        user_name = UserApi.getInstance().getUsername();
+        user_email = UserApi.getInstance().getEmail();
+
+//        user_name = getIntent().getStringExtra("username");
+//        user_email = getIntent().getStringExtra("email");
         Log.d(TAG,"user_name "+ user_name);
         Log.d(TAG,"user_email "+ user_email);
         if(user_name !=null && user_email !=null){
@@ -113,10 +128,13 @@ public class MapsActivity extends AppCompatActivity implements SearchView.OnQuer
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
+
         searchView.setQueryHint("Search city");
         searchView.setOnQueryTextListener(this);
         searchItem.setVisible(false);
         searchView.setIconified(false);
+        searchView.clearFocus();
+
 
         return true;
     }
@@ -201,74 +219,95 @@ public class MapsActivity extends AppCompatActivity implements SearchView.OnQuer
         return false;
     }
 
-    private HashMap<String, Double> getCoordinates(List<Address> geoResults){
-
-        Address address = geoResults.get(0);
-        Bundle extras = address.getExtras();
-        Log.d("extras",String.valueOf(extras));
-        BoundingBox bb = extras.getParcelable("boundingbox");
-        Log.d("boundingbox",String.valueOf(bb));
-        double latitude = bb.getLatNorth();
-        double longitude = bb.getLonEast();
-
-        Log.d("lat after async",String.valueOf(latitude));
-        Log.d("lng after async",String.valueOf(longitude));
-
-        HashMap<String, Double> cords = new HashMap<>();
-        cords.put("lat",latitude);
-        cords.put("lng",longitude);
-
-        return cords;
-
-    }
-
-    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> > {
-
-        PostItemActivity postItemActivity;
-        Locale pCurrent = getResources().getConfiguration().locale;
-        private final String userAgent = BuildConfig.APPLICATION_ID;
-        GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
 
 
-//        public MyAsyncTask(PostItemActivity postItemActivity) {
-//            this.postItemActivity=postItemActivity;
+//    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> > {
+//
+//        PostItemActivity postItemActivity;
+//        Locale pCurrent = getResources().getConfiguration().locale;
+//        private final String userAgent = BuildConfig.APPLICATION_ID;
+//        GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
+//
+//
+////        public MyAsyncTask(PostItemActivity postItemActivity) {
+////            this.postItemActivity=postItemActivity;
+////        }
+//
+//        protected HashMap<String, Double> doInBackground(String... params) {
+//
+//            List<Address> geoResults = null;
+//            try {
+//                geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
+//                cords = getCoordinates(geoResults);
+//                Log.d("result",String.valueOf(geocoderNominatim));
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(MapsActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            return cords;
 //        }
+//
+//
+//        protected void onPostExecute(HashMap<String, Double> cords) {
+//            super.onPostExecute(cords);
+//
+//
+//            if (cords.size() == 0)  //if no address found, display an error
+//                Toast.makeText(MapsActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
+//
+//
+//        }
+//    }
+//
+//    private HashMap<String, Double> getCoordinates(List<Address> geoResults){
+//
+//        Address address = geoResults.get(0);
+//        double latitude = address.getLatitude();
+//        double longitude = address.getLongitude();
+////        Bundle extras = address.getExtras();
+////        Log.d("extras",String.valueOf(extras));
+////        BoundingBox bb = extras.getParcelable("boundingbox");
+////        Log.d("boundingbox",String.valueOf(bb));
+////        double latitude = bb.getLatNorth();
+////        double longitude = bb.getLonEast();
+//
+//        Log.d("lat after async",String.valueOf(latitude));
+//        Log.d("lng after async",String.valueOf(longitude));
+//
+//        HashMap<String, Double> cords = new HashMap<>();
+//        cords.put("lat",latitude);
+//        cords.put("lng",longitude);
+//
+//        return cords;
+//
+//    }
 
-        protected HashMap<String, Double> doInBackground(String... params) {
-
-            List<Address> geoResults = null;
-            try {
-                geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
-                cords = getCoordinates(geoResults);
-                Log.d("result",String.valueOf(geocoderNominatim));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(MapsActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
-            }
-
-            return cords;
-        }
-
-
-        protected void onPostExecute(HashMap<String, Double> cords) {
-            super.onPostExecute(cords);
-
-
-            if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(MapsActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
-
-
-        }
-    }
+//    public HashMap<String, Double> Geocode(String name){
+//
+//        HashMap<String, Double> result = null;
+//        try {
+//            this.myAsyncTask = new MapsActivity.MyAsyncTask();
+//            this.myAsyncTask.execute(name);
+//            result=this.myAsyncTask.get();
+//        }
+//        catch(Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//
+//        return result;
+//
+//    }
 
     public HashMap<String, Double> Geocode(String name){
 
         HashMap<String, Double> result = null;
         try {
-            this.myAsyncTask = new MapsActivity.MyAsyncTask();
-            this.myAsyncTask.execute(name);
-            result=this.myAsyncTask.get();
+            this.geocodingAsyncTask = new GeocodingAsyncTask(MapsActivity.this);
+            this.geocodingAsyncTask.execute(name);
+            result = this.geocodingAsyncTask.get();
         }
         catch(Exception ex)
         {

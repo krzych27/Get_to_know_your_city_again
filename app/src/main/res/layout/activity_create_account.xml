@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".CreateAccountActivity">
+    tools:context=".ui.registerAndLogin.CreateAccountActivity">
 
     <ProgressBar
         android:id="@+id/create_acct_progress"

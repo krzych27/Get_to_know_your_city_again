@@ -8,8 +8,8 @@
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/comment_swipe_refresh_layout"
-        android:layout_width="409dp"
-        android:layout_height="562dp"
+        android:layout_width="wrap_content"
+        android:layout_height="558dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -62,8 +62,8 @@
 
     <LinearLayout
         android:id="@+id/linearLayout4"
-        android:layout_width="409dp"
-        android:layout_height="98dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:elevation="10dp"
         android:gravity="bottom"
         android:orientation="horizontal"
@@ -77,7 +77,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/comment_input_text"
-            android:layout_width="319dp"
+            android:layout_width="317dp"
             android:layout_height="79dp"
             android:layout_gravity="start"
             android:layout_marginStart="8dp"
@@ -98,6 +98,10 @@
             android:background="@android:color/transparent"
             android:scaleType="center"
             android:src="@drawable/add_comment" />
+
+<!--        image button to return ItemListActivity-->
+
+
     </LinearLayout>
 
 

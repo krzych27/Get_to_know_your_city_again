@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.ui;
+package com.Get_to_know_your_city_again.ui.favouritesUserListItems;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,18 +14,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.Get_to_know_your_city_again.model.Users;
+import com.Get_to_know_your_city_again.models.Items;
+import com.Get_to_know_your_city_again.models.Users;
 import com.Get_to_know_your_city_again.ui.comments.CommentsActivity;
 import com.Get_to_know_your_city_again.MapsActivity;
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.Item;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -38,7 +37,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
     private static final String TAG = "ItemRecyclerAdapter";
     private Context context;
-    private List<Item> itemList;
+    private List<Items> itemsList;
 
     private List<Users> usersList;
     private FirebaseAuth firebaseAuth;
@@ -51,9 +50,9 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
 //    private Locale locale = context.getResources().getConfiguration().locale;
 
-    public ItemRecyclerAdapter(Context context, List<Item> itemList) {
+    public ItemRecyclerAdapter(Context context, List<Items> itemsList) {
         this.context = context;
-        this.itemList = itemList;
+        this.itemsList = itemsList;
     }
 
 
@@ -70,19 +69,26 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
     @Override
     public void onBindViewHolder(@NonNull ItemRecyclerAdapter.ViewHolder viewHolder, int position) {
 
-        Item item = itemList.get(position);
+        Items items = itemsList.get(position);
         String imageUrl;
 
-        viewHolder.item_id = item.getItem_id();
+        viewHolder.item_id = items.getItem_id();
+        viewHolder.item_name = items.getName();
+        viewHolder.item_address = items.getStreet() + " " + items.getCity();
+        viewHolder.item_lat = items.getGeoPoint().getLatitude();
+        viewHolder.item_lng = items.getGeoPoint().getLongitude();
 
+        String address = "Address:\n " + items.getStreet() + " " + items.getCity();
+        String description = "Description: " + items.getDescription();
+        String type = "Type:\n " + items.getType();
         Log.d(TAG,"item_id "+ viewHolder.item_id);
-        viewHolder.name.setText(item.getName());
-        viewHolder.street.setText(item.getStreet());
-        viewHolder.city.setText(item.getCity());
-        viewHolder.description.setText(item.getDescription());
-        viewHolder.type.setText(item.getType());
-        viewHolder.addedBy.setText(item.getUsername());
-        imageUrl = item.getImageUrl();
+        viewHolder.name.setText(items.getName());
+        viewHolder.address.setText(address);
+//        viewHolder.description.setText(items.getDescription());
+        viewHolder.description.setText(description);
+        viewHolder.type.setText(type);
+        viewHolder.addedBy.setText(items.getUsername());
+        imageUrl = items.getImageUrl();
 
         Log.d(TAG,"imageUrl\t"+ imageUrl);
         Picasso.get()
@@ -91,12 +97,8 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
                 .fit()
                 .into(viewHolder.image);
 
-//        String pattern = "HH:mm:ss dd/MM/yyyy";
-//        DateFormat df = new SimpleDateFormat(pattern,locale);
-//        DateFormat df = new SimpleDateFormat(pattern);
-
-        Date dateCreated = item.getTimestamp();
-        String date = DateFormat.getDateInstance().format(dateCreated);
+        Date dateCreated = items.getTimestamp();
+        String date = DateFormat.getDateTimeInstance().format(dateCreated);
 
         viewHolder.dateAdded.setText(date);
 
@@ -105,16 +107,15 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
     @Override
     public int getItemCount() {
-        return itemList.size();
+        return itemsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name,street,city,description,addedBy,type,dateAdded;
-
+        public TextView name,address,description,addedBy,type,dateAdded;
         public ImageView image;
-        String userId;
-        String username;
-        String item_id;
+
+        String item_id,item_name,item_address;
+        Double item_lat,item_lng;
 
         public ImageButton mapButton;
         public ImageButton commentButton;
@@ -125,8 +126,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
             context = ctx;
 
             name = itemView.findViewById(R.id.item_name_list);
-            street = itemView.findViewById(R.id.item_street_list);
-            city = itemView.findViewById(R.id.item_city_list);
+            address = itemView.findViewById(R.id.item_address);
             description = itemView.findViewById(R.id.item_description_list);
             addedBy = itemView.findViewById(R.id.item_username_list);
             type = itemView.findViewById(R.id.item_type_list);
@@ -160,7 +160,14 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 
             mapButton.setOnClickListener(v->{
                 Intent intent = new Intent(context, MapsActivity.class);
-
+                intent.putExtra("lat",item_lat);
+                intent.putExtra("lng",item_lng);
+                intent.putExtra("name",item_name);
+                intent.putExtra("address",item_address);
+                Log.d(TAG,"item_name in mapButton "+ item_name);
+                Log.d(TAG,"item_address in mapButton "+ item_address);
+                Log.d(TAG,"item_lat in mapButton "+ item_lat);
+                Log.d(TAG,"item_lng in mapButton "+ item_lng);
                 context.startActivity(intent);
             });
 

@@ -1,8 +1,9 @@
-package com.Get_to_know_your_city_again;
+package com.Get_to_know_your_city_again.ui.items;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.net.Uri;
@@ -20,7 +21,11 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.Get_to_know_your_city_again.model.Item;
+import com.Get_to_know_your_city_again.BuildConfig;
+import com.Get_to_know_your_city_again.MapsActivity;
+import com.Get_to_know_your_city_again.R;
+import com.Get_to_know_your_city_again.models.Items;
+import com.Get_to_know_your_city_again.utils.GeocodingAsyncTask;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +38,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.osmdroid.bonuspack.location.GeocoderNominatim;
-import org.osmdroid.util.BoundingBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,12 +45,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class EditItemActivity extends AppCompatActivity implements View.OnClickListener {
+public class PostItemActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "EditItemActivity";
+    private static final String TAG = "PostItemActivity";
     private static final int GALLERY_CODE = 1;
 
-    private Button editItemButton;
+    private Button addItemButton;
     private Button cancelButton;
     private ProgressBar progressBar;
     private ImageView addPhotoButton;
@@ -70,21 +74,28 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
 
-    private CollectionReference collectionReference = db.collection("Item");
-    private DocumentReference documentReference = db.collection("Item").document();
+    private CollectionReference collectionReference = db.collection("Items");
+    private DocumentReference documentReference = db.collection("Items").document();
     private Uri imageUri;
 
 
 
-    private MyAsyncTask myAsyncTask = null;
+//    private MyAsyncTask myAsyncTask = null;
+    private GeocodingAsyncTask geocodingAsyncTask = null;
+    private Context context;
+    private Locale current;
+    private String userAgent;
     private HashMap<String, Double> cords;
     private GeoPoint geoPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_item);
+        setContentView(R.layout.activity_post_item);
 
+//        context = getBaseContext();
+//        current = getResources().getConfiguration().locale;
+//        userAgent = BuildConfig.APPLICATION_ID;
 
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -124,11 +135,11 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
 
         Log.d(TAG,"Selected type is" + typeItem);
 
-        editItemButton = findViewById(R.id.edit_item_button);
+        addItemButton = findViewById(R.id.add_item_button);
         cancelButton = findViewById(R.id.cancel_button);
         imageView = findViewById(R.id.item_CameraButton);
 
-        editItemButton.setOnClickListener(this);
+        addItemButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         imageView.setOnClickListener(this);
 
@@ -154,14 +165,14 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
 
-            case R.id.edit_item_button:{
-                editItem();
+            case R.id.add_item_button:{
+                SaveItem();
 
                 break;
             }
 
             case R.id.cancel_button:{
-                Intent intent = new Intent(EditItemActivity.this,
+                Intent intent = new Intent(PostItemActivity.this,
                         MapsActivity.class);
                 startActivity(intent);
                 break;
@@ -176,27 +187,29 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void editItem(){
+    private void SaveItem(){
 
         final String name = nameEditText.getText().toString().trim();
         final String street = streetEditText.getText().toString().trim();
         final String city = cityEditText.getText().toString().trim();
         final String description = descriptionEditText.getText().toString().trim();
         final String type = typeItem;
+        final String address = (street+" "+city).trim();
 
         progressBar.setVisibility(View.VISIBLE);
 
-        Log.d(TAG,"name"+name);
-        Log.d(TAG,"street"+street);
-        Log.d(TAG,"city"+city);
-        Log.d(TAG,"description"+description);
-        Log.d(TAG,"type"+type);
+        Log.d(TAG,"name "+name);
+        Log.d(TAG,"street "+street);
+        Log.d(TAG,"city "+city);
+        Log.d(TAG,"address "+address);
+        Log.d(TAG,"description "+description);
+        Log.d(TAG,"type "+type);
 
         if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(street) &&
                 !TextUtils.isEmpty(description) && !TextUtils.isEmpty(type)
                 && !TextUtils.isEmpty(city) &&imageUri != null) {
 
-            cords = Geocode(street+" "+city);
+            cords = Geocode(address);
             if(cords.isEmpty()) {
                 Log.d(TAG,"Hashmap is empty");
             }
@@ -216,28 +229,26 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
 
                         String imageUrl = uri.toString();
 
-                        Item item = new Item();
-                        item.setName(name);
-                        item.setStreet(street);
-                        item.setCity(city);
-                        item.setDescription(description);
-                        item.setType(type);
-                        item.setImageUrl(imageUrl);
-
-                        String address = street + " " + city;
+                        Items items = new Items();
+                        items.setName(name);
+                        items.setStreet(street);
+                        items.setCity(city);
+                        items.setDescription(description);
+                        items.setType(type);
+                        items.setImageUrl(imageUrl);
 
                         // upload coordinates from geocoding
-                        item.setGeoPoint(geoPoint);
+                        items.setGeoPoint(geoPoint);
 
-                        item.setUsername(currentUserName);
-                        item.setUser_id(currentUserId);
+                        items.setUsername(currentUserName);
+                        items.setUser_id(currentUserId);
 
-                        collectionReference.add(item)
+                        collectionReference.add(items)
                                 .addOnSuccessListener(documentReference -> {
 
                                     progressBar.setVisibility(View.INVISIBLE);
 
-                                    Intent intent = new Intent(EditItemActivity.this,
+                                    Intent intent = new Intent(PostItemActivity.this,
                                             MapsActivity.class);
 
                                     intent.putExtra("lat",lat);
@@ -261,74 +272,93 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private  HashMap<String, Double> getCoordinates( List<Address> geoResults){
-
-        Address address = geoResults.get(0);
-        Bundle extras = address.getExtras();
-        Log.d("extras",String.valueOf(extras));
-        BoundingBox bb = extras.getParcelable("boundingbox");
-        Log.d("boundingbox",String.valueOf(bb));
-        double latitude = bb.getLatNorth();
-        double longitude = bb.getLonEast();
-
-        Log.d("lat after async",String.valueOf(latitude));
-        Log.d("lng after async",String.valueOf(longitude));
-
-        HashMap<String, Double> cords = new HashMap<>();
-        cords.put("lat",latitude);
-        cords.put("lng",longitude);
-
-        return cords;
-
-    }
-
-    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> > {
-
-        PostItemActivity postItemActivity;
-        Locale pCurrent = getResources().getConfiguration().locale;
-        private final String userAgent = BuildConfig.APPLICATION_ID;
-        GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
-
-
-//        public MyAsyncTask(PostItemActivity postItemActivity) {
-//            this.postItemActivity=postItemActivity;
+//    public class MyAsyncTask extends AsyncTask<String,Integer, HashMap<String, Double> > {
+//
+//        Context context;
+//        Locale pCurrent;
+//        String userAgent;
+////        Locale pCurrent = getResources().getConfiguration().locale;
+//////        private String userAgent = BuildConfig.APPLICATION_ID; //private final
+//        GeocoderNominatim geocoderNominatim = new GeocoderNominatim(pCurrent,userAgent);
+//
+//        public MyAsyncTask(Context context,Locale pCurrent,String userAgent) {
+//            this.pCurrent = pCurrent;
+//            this.userAgent = userAgent;
+//            this.context=context;
 //        }
+//
+//        protected HashMap<String, Double> doInBackground(String... params) {
+//
+//            List<Address> geoResults = null;
+//            try {
+//                geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
+//                cords = getCoordinates(geoResults);
+//                Log.d("result",String.valueOf(geocoderNominatim));
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(PostItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            return cords;
+//        }
+//
+//
+//        protected void onPostExecute(HashMap<String, Double> cords) {
+//            super.onPostExecute(cords);
+//
+//            if (cords.size() == 0)  //if no address found, display an error
+//                Toast.makeText(PostItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+//
+//    private  HashMap<String, Double> getCoordinates( List<Address> geoResults){
+//
+//        Address address = geoResults.get(0);
+//        double latitude = address.getLatitude();
+//        double longitude = address.getLongitude();
+////        Bundle extras = address.getExtras();
+////        Log.d("extras",String.valueOf(extras));
+////        BoundingBox bb = extras.getParcelable("boundingbox");
+////        Log.d("boundingbox",String.valueOf(bb));
+////        double latitude = bb.getLatNorth();
+////        double longitude = bb.getLonEast();
+//
+//        Log.d("lat after async",String.valueOf(latitude));
+//        Log.d("lng after async",String.valueOf(longitude));
+//
+//        HashMap<String, Double> cords = new HashMap<>();
+//        cords.put("lat",latitude);
+//        cords.put("lng",longitude);
+//
+//        return cords;
+//
+//    }
 
-        protected HashMap<String, Double> doInBackground(String... params) {
-
-            List<Address> geoResults = null;
-            try {
-                geoResults = geocoderNominatim.getFromLocationName(params[0], 1);
-                cords = getCoordinates(geoResults);
-                Log.d("result",String.valueOf(geocoderNominatim));
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(EditItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
-            }
-
-            return cords;
-        }
-
-
-        protected void onPostExecute(HashMap<String, Double> cords) {
-            super.onPostExecute(cords);
-
-
-            if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(EditItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
-
-
-        }
-    }
+//    public HashMap<String, Double> Geocode(String name){
+//
+//        HashMap<String, Double> result = null;
+//        try {
+//            this.myAsyncTask = new MyAsyncTask();
+//            this.myAsyncTask.execute(name);
+//            result=this.myAsyncTask.get();
+//        }
+//        catch(Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//
+//        return result;
+//
+//    }
 
     public HashMap<String, Double> Geocode(String name){
 
         HashMap<String, Double> result = null;
         try {
-            this.myAsyncTask = new MyAsyncTask();
-            this.myAsyncTask.execute(name);
-            result=this.myAsyncTask.get();
+            this.geocodingAsyncTask = new GeocodingAsyncTask(PostItemActivity.this);
+            this.geocodingAsyncTask.execute(name);
+            result = this.geocodingAsyncTask.get();
         }
         catch(Exception ex)
         {
@@ -339,7 +369,8 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    @Override
+
+        @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
@@ -366,4 +397,3 @@ public class EditItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 }
-

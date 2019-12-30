@@ -11,24 +11,24 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.Item;
-import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
+import com.Get_to_know_your_city_again.models.Items;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FavouritesUserListItemsFragment extends Fragment {
 
@@ -38,12 +38,19 @@ public class FavouritesUserListItemsFragment extends Fragment {
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private StorageReference storageReference;
-    private List<Item> itemList;
+
+    private List<Items> itemsList;
+    private Map<String,String> favouritesUserItems = new HashMap<>();
+    private ArrayList<String> favouritesItems = new ArrayList<>();
     private RecyclerView recyclerView;
     private ItemRecyclerAdapter itemRecyclerAdapter;
 
-    private CollectionReference collectionReference = db.collection("Item");
+    private CollectionReference itemCollectionReference = db.collection("Items");
+    private CollectionReference collectionReference = db.collection("Users");
+    private CollectionReference favouritesItemsCollectionReference;
+    private DocumentReference documentReference = db.collection("Users").document();
+
+
     private TextView noItemEntry;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,10 +63,12 @@ public class FavouritesUserListItemsFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
-        noItemEntry = rl.findViewById(R.id.no_list_items);
-        itemList = new ArrayList<>();
+        setHasOptionsMenu(false);
 
-        recyclerView = rl.findViewById(R.id.recyclerView);
+        noItemEntry = rl.findViewById(R.id.list_favourites_text);
+        itemsList = new ArrayList<>();
+
+        recyclerView = rl.findViewById(R.id.list_favourites_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -74,29 +83,65 @@ public class FavouritesUserListItemsFragment extends Fragment {
         String name_city;
         Log.d(TAG,"userId is" + userId);
 
-        collectionReference.whereEqualTo("user_id", UserApi.getInstance()
-                .getUserId())
+        favouritesItemsCollectionReference = collectionReference
+                .document(UserApi.getInstance().getUserId())
+                .collection("FavouritesItems");
+
+        favouritesItemsCollectionReference
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-                            Item item = items.toObject(Item.class);
-                            itemList.add(item);
+                            favouritesItems.add(items.getString("item_id"));
+                            Log.d(TAG,"item_id in favouritesCollection " + items.getString("item_id"));
                         }
+                        Log.d(TAG,"number of favourites Items after query: " + favouritesItems.size());
+                        for(String items_id : favouritesItems){
+                            Log.d(TAG,"current item_id in for is: " + items_id);
+                            itemCollectionReference.whereEqualTo(FieldPath.documentId(),items_id)
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots2 -> {
+                                        if (!queryDocumentSnapshots2.isEmpty()) {
+                                            for (QueryDocumentSnapshot items : queryDocumentSnapshots2) {
+                                                Items item = items.toObject(Items.class);
+                                                itemsList.add(item);
+                                            }
+                                            Log.d(TAG,"number of itemsList is: " + itemsList.size());
+                                            favouritesItems.remove(items_id);
+                                            if((favouritesItems.isEmpty())){
+                                                itemRecyclerAdapter = new ItemRecyclerAdapter(this.context, itemsList);
+                                                recyclerView.setAdapter(itemRecyclerAdapter);
+                                            }
+                                        }else {
+                                            noItemEntry.setVisibility(View.VISIBLE);
+                                            Log.d(TAG,"item queryDocument is empty");
+                                        }
 
-                        itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemList);
-                        recyclerView.setAdapter(itemRecyclerAdapter);
+                                    })
+                                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
+
+                        }
+                        Log.d(TAG,"number of itemsList after for is: " + itemsList.size());
+
 
                     }else {
                         noItemEntry.setVisibility(View.VISIBLE);
-                        Log.d(TAG,"queryDocument is empty");
+                        Log.d(TAG,"favourites queryDocument is empty");
 
                     }
-
                 })
-                .addOnFailureListener(e -> {
+                .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
 
-                });
+        Log.d(TAG,"number of favourites Items: " + favouritesItems.size());
 
+
+
+//        if(!itemsList.isEmpty()){
+//            itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemsList);
+//            recyclerView.setAdapter(itemRecyclerAdapter);
+//        }else{
+//            noItemEntry.setVisibility(View.VISIBLE);
+//            Log.d(TAG,"queryDocument is empty");
+//        }
     }
 }

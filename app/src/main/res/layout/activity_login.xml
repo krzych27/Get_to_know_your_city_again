@@ -6,7 +6,7 @@
     android:gravity="center"
     android:padding="16dp"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".ui.registerAndLogin.LoginActivity">
 
     <ProgressBar
         android:id="@+id/login_progress"

@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.ui.userListItems;
+package com.Get_to_know_your_city_again.ui.items;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.Item;
-import com.Get_to_know_your_city_again.ui.ItemRecyclerAdapter;
+import com.Get_to_know_your_city_again.models.Items;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,11 +36,11 @@ public class UserListItemsFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
-    private List<Item> itemList;
+    private List<Items> itemsList;
     private RecyclerView recyclerView;
-    private ItemRecyclerAdapter itemRecyclerAdapter;
+    private UserItemRecyclerAdapter userItemRecyclerAdapter;
 
-    private CollectionReference collectionReference = db.collection("Item");
+    private CollectionReference collectionReference = db.collection("Items");
     private TextView noItemEntry;
 
 
@@ -57,8 +56,10 @@ public class UserListItemsFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
+        setHasOptionsMenu(false);
+
         noItemEntry = rl.findViewById(R.id.no_list_items);
-        itemList = new ArrayList<>();
+        itemsList = new ArrayList<>();
 
         recyclerView = rl.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -80,12 +81,12 @@ public class UserListItemsFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-                            Item item = items.toObject(Item.class);
-                            itemList.add(item);
+                            Items item = items.toObject(Items.class);
+                            itemsList.add(item);
                         }
 
-                        itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemList);
-                        recyclerView.setAdapter(itemRecyclerAdapter);
+                        userItemRecyclerAdapter = new UserItemRecyclerAdapter(this.context, itemsList);
+                        recyclerView.setAdapter(userItemRecyclerAdapter);
 
                     }else {
                         noItemEntry.setVisibility(View.VISIBLE);
@@ -111,13 +112,13 @@ public class UserListItemsFragment extends Fragment {
 //                .addOnSuccessListener(queryDocumentSnapshots -> {
 //                    if (!queryDocumentSnapshots.isEmpty()) {
 //                        for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-//                            Item item = items.toObject(Item.class);
-//                            itemList.add(item);
+//                            Items item = items.toObject(Items.class);
+//                            itemsList.add(item);
 //                        }
 //
-////                        itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemList);
+////                        itemRecyclerAdapter = new ItemRecyclerAdapter(this.context,itemsList);
 ////                        recyclerView.setAdapter(itemRecyclerAdapter);
-//                        itemRecyclerAdapter.updateWith(itemList);
+//                        itemRecyclerAdapter.updateWith(itemsList);
 //
 //                    }else {
 //                        noItemEntry.setVisibility(View.VISIBLE);

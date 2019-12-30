@@ -13,25 +13,24 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 
-<!--    android:requestLegacyExternalStorage="true"-->
-
+<!--    android:icon="@mipmap/ic_launcher"-->
+<!--    android:roundIcon="@mipmap/ic_launcher_round"-->
+<!--    in application below-->
     <application
         android:name=".utils.UserApi"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
 
-        <activity android:name=".ItemListActivity"></activity>
-        <activity android:name=".PostItemActivity" />
-        <activity android:name=".EditItemActivity"/>
+        <activity android:name=".ui.items.ItemListActivity"></activity>
+        <activity android:name=".ui.items.PostItemActivity" />
+        <activity android:name=".ui.items.EditItemActivity"/>
         <activity android:name=".ui.comments.CommentsActivity"/>
-        <activity android:name=".CreateAccountActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".ui.registerAndLogin.CreateAccountActivity" />
+        <activity android:name=".ui.registerAndLogin.LoginActivity" />
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"

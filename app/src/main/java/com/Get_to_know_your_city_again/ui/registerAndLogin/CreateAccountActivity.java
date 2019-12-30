@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again;
+package com.Get_to_know_your_city_again.ui.registerAndLogin;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,16 +12,15 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.Get_to_know_your_city_again.model.Users;
+import com.Get_to_know_your_city_again.MapsActivity;
+import com.Get_to_know_your_city_again.R;
+import com.Get_to_know_your_city_again.models.Users;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
@@ -108,47 +107,67 @@ public class CreateAccountActivity extends AppCompatActivity {
 //                            userObject.put("userId",currentUserId);
 //                            userObject.put("username",username);
 
-                            collectionReference.add(users)
-                                    .addOnSuccessListener(documentReference -> documentReference.get()
-                                            .addOnCompleteListener(task1 -> {
-                                                if(Objects.requireNonNull(task1.getResult()).exists()){
-                                                    progressBar.setVisibility(View.INVISIBLE);
-                                                    String name = task1.getResult()
-                                                            .getString("username");
+                            collectionReference.document(currentUserId).set(users)
+                                    .addOnSuccessListener(v->{
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        UserApi userApi = UserApi.getInstance();
+                                        userApi.setUserId(currentUserId);
+                                        userApi.setUsername(username);
+                                        userApi.setEmail(email);
 
-                                                    UserApi userApi = UserApi.getInstance();
-                                                    userApi.setUserId(currentUserId);
-                                                    userApi.setUsername(name);
-                                                    userApi.setEmail(email);
+                                        Log.d(TAG,"username"+username);
+                                        Log.d(TAG,"userId"+ currentUserId);
+                                        Log.d(TAG,"email"+email);
 
-                                                    Log.d(TAG,"username"+name);
-                                                    Log.d(TAG,"userId"+ currentUserId);
-                                                    Log.d(TAG,"email"+email);
+                                        Intent intent = new Intent(CreateAccountActivity.this,
+                                                MapsActivity.class);
 
-                                                    Intent intent = new Intent(CreateAccountActivity.this,
-                                                            MapsActivity.class);
+                                        intent.putExtra("username", username);
+                                        intent.putExtra("userId", currentUserId);
+                                        intent.putExtra("email",email);
+                                        startActivity(intent);
+                                    })
+                                    .addOnFailureListener(e-> Log.d(TAG, "onFailure: " + e.getMessage()));
 
-//                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-                                                    intent.putExtra("username", name);
-                                                    intent.putExtra("userId", currentUserId);
-                                                    intent.putExtra("email",email);
-                                                    startActivity(intent);
-
-                                                }else{
-                                                    progressBar.setVisibility(View.INVISIBLE);
-                                                }
-                                            }))
-                                    .addOnFailureListener(e -> {
-
-                                    });
-
-                        }else{
-
+//                            collectionReference.add(users)
+//                                    .addOnSuccessListener(documentReference -> documentReference.get()
+//                                            .addOnCompleteListener(task1 -> {
+//                                                if(Objects.requireNonNull(task1.getResult()).exists()){
+//                                                    progressBar.setVisibility(View.INVISIBLE);
+//                                                    String name = task1.getResult()
+//                                                            .getString("username");
+//
+//                                                    UserApi userApi = UserApi.getInstance();
+//                                                    userApi.setUserId(currentUserId);
+//                                                    userApi.setUsername(name);
+//                                                    userApi.setEmail(email);
+//
+//                                                    Log.d(TAG,"username"+name);
+//                                                    Log.d(TAG,"userId"+ currentUserId);
+//                                                    Log.d(TAG,"email"+email);
+//
+//                                                    Intent intent = new Intent(CreateAccountActivity.this,
+//                                                            MapsActivity.class);
+//
+////                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//
+//                                                    intent.putExtra("username", name);
+//                                                    intent.putExtra("userId", currentUserId);
+//                                                    intent.putExtra("email",email);
+//                                                    startActivity(intent);
+//
+//                                                }else{
+//                                                    progressBar.setVisibility(View.INVISIBLE);
+//                                                }
+//                                            }))
+//                                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
+//
+//                        }else{
+//
                         }
                     })
-                    .addOnFailureListener(e -> {
-                    });
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e.getMessage()));
         }else{
 
         }

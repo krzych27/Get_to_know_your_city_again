@@ -2,17 +2,17 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="horizontal"
     android:padding="16dp"
-    tools:context=".PostItemActivity">
+    tools:context=".ui.items.PostItemActivity">
 
     <ScrollView
-        android:layout_width="395dp"
-        android:layout_height="709dp"
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -22,11 +22,15 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="1dp">
 
 
             <TextView
@@ -34,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="56dp"
                 android:layout_marginEnd="8dp"
                 android:padding="15dp"
                 android:text="@string/item_textView"
@@ -43,7 +48,7 @@
                 android:textColor="@color/linkBlue"
                 android:textSize="19sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.062"
+                app:layout_constraintHorizontal_bias="0.812"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -87,19 +92,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/item_imageView" />
 
-            <!--    <com.google.android.material.textfield.TextInputLayout-->
-            <!--        android:id="@+id/name_item_wrapper"-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:layout_marginStart="8dp"-->
-            <!--        android:layout_marginTop="44dp"-->
-            <!--        android:layout_marginEnd="8dp"-->
-            <!--        app:layout_constraintEnd_toEndOf="parent"-->
-            <!--        app:layout_constraintStart_toStartOf="parent"-->
-            <!--        app:layout_constraintTop_toBottomOf="@+id/item_progressBar">-->
-
-            <!--    </com.google.android.material.textfield.TextInputLayout>-->
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/name_item"
                 android:layout_width="match_parent"
@@ -117,19 +109,6 @@
                 app:layout_constraintHorizontal_bias="0.062"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/item_textView" />
-
-            <!--    <com.google.android.material.textfield.TextInputLayout-->
-            <!--        android:id="@+id/address_item_wrapper"-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:layout_marginStart="8dp"-->
-            <!--        android:layout_marginTop="96dp"-->
-            <!--        android:layout_marginEnd="8dp"-->
-            <!--        app:layout_constraintEnd_toEndOf="parent"-->
-            <!--        app:layout_constraintStart_toStartOf="parent"-->
-            <!--        app:layout_constraintTop_toBottomOf="@+id/name_item_wrapper">-->
-
-            <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/city_item"
@@ -166,7 +145,6 @@
                 app:layout_constraintHorizontal_bias="0.062"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/city_item" />
-
 
 
             <com.google.android.material.textfield.TextInputEditText

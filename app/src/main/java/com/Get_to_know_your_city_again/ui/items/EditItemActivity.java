@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again;
+package com.Get_to_know_your_city_again.ui.items;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +20,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.Get_to_know_your_city_again.model.Item;
+import com.Get_to_know_your_city_again.BuildConfig;
+import com.Get_to_know_your_city_again.MapsActivity;
+import com.Get_to_know_your_city_again.R;
+import com.Get_to_know_your_city_again.models.Items;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,12 +44,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class PostItemActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditItemActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "PostItemActivity";
+    private static final String TAG = "EditItemActivity";
     private static final int GALLERY_CODE = 1;
 
-    private Button addItemButton;
+    private Button editItemButton;
     private Button cancelButton;
     private ProgressBar progressBar;
     private ImageView addPhotoButton;
@@ -70,8 +73,8 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
 
-    private CollectionReference collectionReference = db.collection("Item");
-    private DocumentReference documentReference = db.collection("Item").document();
+    private CollectionReference collectionReference = db.collection("Items");
+    private DocumentReference documentReference = db.collection("Items").document();
     private Uri imageUri;
 
 
@@ -83,7 +86,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post_item);
+        setContentView(R.layout.activity_edit_item);
 
 
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -124,11 +127,11 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
         Log.d(TAG,"Selected type is" + typeItem);
 
-        addItemButton = findViewById(R.id.add_item_button);
+        editItemButton = findViewById(R.id.edit_item_button);
         cancelButton = findViewById(R.id.cancel_button);
         imageView = findViewById(R.id.item_CameraButton);
 
-        addItemButton.setOnClickListener(this);
+        editItemButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         imageView.setOnClickListener(this);
 
@@ -154,14 +157,14 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()){
 
-            case R.id.add_item_button:{
-                SaveItem();
+            case R.id.edit_item_button:{
+                editItem();
 
                 break;
             }
 
             case R.id.cancel_button:{
-                Intent intent = new Intent(PostItemActivity.this,
+                Intent intent = new Intent(EditItemActivity.this,
                         MapsActivity.class);
                 startActivity(intent);
                 break;
@@ -176,7 +179,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void SaveItem(){
+    private void editItem(){
 
         final String name = nameEditText.getText().toString().trim();
         final String street = streetEditText.getText().toString().trim();
@@ -216,28 +219,28 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
                         String imageUrl = uri.toString();
 
-                        Item item = new Item();
-                        item.setName(name);
-                        item.setStreet(street);
-                        item.setCity(city);
-                        item.setDescription(description);
-                        item.setType(type);
-                        item.setImageUrl(imageUrl);
+                        Items items = new Items();
+                        items.setName(name);
+                        items.setStreet(street);
+                        items.setCity(city);
+                        items.setDescription(description);
+                        items.setType(type);
+                        items.setImageUrl(imageUrl);
 
                         String address = street + " " + city;
 
                         // upload coordinates from geocoding
-                        item.setGeoPoint(geoPoint);
+                        items.setGeoPoint(geoPoint);
 
-                        item.setUsername(currentUserName);
-                        item.setUser_id(currentUserId);
+                        items.setUsername(currentUserName);
+                        items.setUser_id(currentUserId);
 
-                        collectionReference.add(item)
+                        collectionReference.add(items)
                                 .addOnSuccessListener(documentReference -> {
 
                                     progressBar.setVisibility(View.INVISIBLE);
 
-                                    Intent intent = new Intent(PostItemActivity.this,
+                                    Intent intent = new Intent(EditItemActivity.this,
                                             MapsActivity.class);
 
                                     intent.putExtra("lat",lat);
@@ -304,7 +307,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(PostItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditItemActivity.this, "Geocoding error! Internet available?", Toast.LENGTH_SHORT).show();
             }
 
             return cords;
@@ -316,7 +319,7 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
 
 
             if (cords.size() == 0)  //if no address found, display an error
-                Toast.makeText(PostItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditItemActivity.this, "Object not found", Toast.LENGTH_SHORT).show();
 
 
         }
@@ -366,3 +369,4 @@ public class PostItemActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 }
+

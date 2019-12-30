@@ -16,7 +16,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string name="dialog_new_item">New object item</string>
+    <string name="dialog_new_item">New object items</string>
     <string name="add_item">Add Item</string>
     <string name="cancel">Cancel</string>
     <string name="edit_item">Edit Item</string>
@@ -31,7 +31,7 @@
     <string name="create_text">Create Account</string>
     <string name="username_hint">Username</string>
     <string name="get_started">Get started!</string>
-    <string name="item_textView">Add new item</string>
+    <string name="item_textView">Add new items</string>
     <string name="comment_tittle">Comments</string>
     <string name="comment_input_text">write a comment here...</string>
     <string name="added_by">Added by</string>
@@ -39,5 +39,9 @@
     <string name="search_locality">Search locality</string>
     <string name="city_item">City</string>
     <string name="street_item">Street </string>
+    <string name="address_text">Address:</string>
+    <string name="description_item_text">Description:</string>
+    <string name="type_item_text">Type:</string>
+    <string name="addedBy_item_text">Added by </string>
 
 </resources>

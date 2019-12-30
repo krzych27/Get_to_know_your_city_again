@@ -1,4 +1,4 @@
-package com.Get_to_know_your_city_again.model;
+package com.Get_to_know_your_city_again.models;
 
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.ServerTimestamp;

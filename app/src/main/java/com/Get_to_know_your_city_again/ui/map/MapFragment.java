@@ -1,12 +1,19 @@
 package com.Get_to_know_your_city_again.ui.map;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,12 +25,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.Get_to_know_your_city_again.BuildConfig;
-import com.Get_to_know_your_city_again.PostItemActivity;
+import com.Get_to_know_your_city_again.ui.items.ItemListActivity;
+import com.Get_to_know_your_city_again.ui.items.PostItemActivity;
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.Item;
+import com.Get_to_know_your_city_again.models.Items;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,7 +46,6 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -47,7 +55,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class MapFragment extends Fragment implements LocationListener{
+import static android.content.Context.LOCATION_SERVICE;
+
+public class MapFragment extends Fragment implements LocationListener {
 
     private final String TAG = "MapFragment";
     private MapView map;
@@ -68,34 +78,35 @@ public class MapFragment extends Fragment implements LocationListener{
     private HashMap<String, Double> cords;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference collectionReference = db.collection("Item");
-    private List<Item> itemList;
+    private CollectionReference collectionReference = db.collection("Items");
+    private List<Items> itemsList;
     private List<com.google.firebase.firestore.GeoPoint> geoPoints;
 
-    private String name_item,address_item;
-    private double lat,lng,searched_lat,searched_lng;
+    private String name_item, address_item;
+    private double lat, lng, searched_lat, searched_lng;
     private Bundle mArgs;
-
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-       View rl = inflater.inflate(R.layout.fragment_map, container, false);
-        if(getActivity() != null)
+        View rl = inflater.inflate(R.layout.fragment_map, container, false);
+        if (getActivity() != null)
             context = getActivity();
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
         setHasOptionsMenu(true);
 
+        locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+
         map = rl.findViewById(R.id.mapView);
 
-        itemList = new ArrayList<>();
+        itemsList = new ArrayList<>();
 
         mArgs = getArguments();
 
-        if(mArgs != null && !mArgs.isEmpty()){
+        if (mArgs != null && !mArgs.isEmpty()) {
             name_item = mArgs.getString("name");
             address_item = mArgs.getString("address");
             lng = mArgs.getDouble("lng");
@@ -114,7 +125,7 @@ public class MapFragment extends Fragment implements LocationListener{
         fab_anticlock = AnimationUtils.loadAnimation(context.getApplicationContext(), R.anim.fab_rotate_anticlock);
 
 
-        fab_add.setOnClickListener(v ->{
+        fab_add.setOnClickListener(v -> {
             if (isOpen) {
 
 //                textview_map.setVisibility(View.INVISIBLE);
@@ -137,7 +148,7 @@ public class MapFragment extends Fragment implements LocationListener{
             }
         });
 
-        fab_item.setOnClickListener(v ->{
+        fab_item.setOnClickListener(v -> {
             Intent intent = new Intent(context,
                     PostItemActivity.class);
 //            Intent intent = new Intent(context,
@@ -146,41 +157,47 @@ public class MapFragment extends Fragment implements LocationListener{
             startActivity(intent);
         });
 
-        fab_location.setOnClickListener(v->{
+        fab_location.setOnClickListener(v -> {
 
-            Toast.makeText(context,"This is your location",Toast.LENGTH_LONG).show();
+
+//            LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+//            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                return;
+//            }
+
         });
 
 
-//        loadItems();
-
         setupMap();
+        setUserLocation();
+        loadItems();
 
-       return rl;
+        return rl;
 
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item=menu.findItem(R.id.action_search);
-        if(item!=null)
+        MenuItem item = menu.findItem(R.id.action_search);
+        if (item != null)
             item.setVisible(true);
     }
 
-    private void loadItems(){
+    private void loadItems() {
 
         collectionReference
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (QueryDocumentSnapshot items : queryDocumentSnapshots) {
-                            Item item = items.toObject(Item.class);
-                            itemList.add(item);
+                            Items item = items.toObject(Items.class);
+                            itemsList.add(item);
 //                            geoPoints.add(item.getGeoPoint());
-                            int count = itemList.size();
-                            Log.d(TAG,"size of itemList is " + String.valueOf(count));
+                            int count = itemsList.size();
+                            Log.d(TAG, "size of itemsList is " + String.valueOf(count));
 
-                            Log.d(TAG,"loaded items to itemList");
+                            Log.d(TAG, "loaded items to itemsList");
 
                             double lat = item.getGeoPoint().getLatitude();
                             double lng = item.getGeoPoint().getLongitude();
@@ -189,24 +206,24 @@ public class MapFragment extends Fragment implements LocationListener{
                             String description_item = item.getDescription();
                             String item_id = item.getItem_id();
 
-                            Log.d(TAG,"name" + name_item);
-                            Log.d(TAG,"description" + description_item);
-                            Log.d(TAG,"lat" + String.valueOf(lat));
-                            Log.d(TAG,"lng" + String.valueOf(lng));
+                            Log.d(TAG, "name" + name_item);
+                            Log.d(TAG, "description" + description_item);
+                            Log.d(TAG, "lat" + String.valueOf(lat));
+                            Log.d(TAG, "lng" + String.valueOf(lng));
 
-                            addMarker(name_item,description_item,lat,lng);
+                            GeoPoint geoPointAdded = new GeoPoint(lat, lng);
+                            createMarker(name_item, address_item, geoPointAdded);
 
                         }
 
-                    }else{
-                            Log.d(TAG,"queryDocument is empty");
+                    } else {
+                        Log.d(TAG, "queryDocument is empty");
 
                     }
                 })
-                .addOnFailureListener(e ->{} );
+                .addOnFailureListener(e -> {
+                });
     }
-
-
 
 
     // initializing map
@@ -231,6 +248,68 @@ public class MapFragment extends Fragment implements LocationListener{
 
         map.invalidate();
 
+//        if(mArgs != null && !mArgs.isEmpty() && searched_lat!=0 && searched_lng!=0){
+//            GeoPoint geo_point_searched = new GeoPoint(searched_lat, searched_lng);
+//            map.getController().setCenter(geo_point_searched);
+//            map.getController().animateTo(geo_point_searched);
+//
+//            map.invalidate();
+//        }
+
+        if (mArgs != null && !mArgs.isEmpty() && lat != 50.061219 && lat != 0 && lng != 19.936804 && lng != 0) {
+
+
+            Log.d(TAG, "name from postactivity" + name_item);
+            Log.d(TAG, "address from postactivity" + address_item);
+            Log.d(TAG, "lat from postactivity" + String.valueOf(lat));
+            Log.d(TAG, "lng from postactivity" + String.valueOf(lng));
+
+//            addMarker(name_item, description_item, lat, lng);
+            GeoPoint geoPointAdded = new GeoPoint(lat, lng);
+            createMarker(name_item, address_item, geoPointAdded);
+
+            map.getController().setCenter(geoPointAdded);
+            map.getController().animateTo(geoPointAdded);
+        }
+
+
+    }
+
+    private void setUserLocation() {
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
+                        ,10);
+            }
+            return;
+        }
+
+        fab_location.setOnClickListener(v -> {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, this);
+            Criteria criteria = new Criteria();
+            String bestProvider = locationManager.getBestProvider(criteria, true);
+            Location location = locationManager.getLastKnownLocation(bestProvider);
+
+            if (location == null) {
+                Toast.makeText(context, "GPS signal not found", Toast.LENGTH_SHORT).show();
+            }
+            if (location != null) {
+                Toast.makeText(context, "This is your location", Toast.LENGTH_LONG).show();
+                GeoPoint center = new GeoPoint(location.getLatitude(),location.getLongitude());
+                Log.d(TAG,"Location user: " + location.getLatitude() + ", " + location.getLongitude());
+                map.getController().setCenter(center);
+                map.getController().animateTo(center);
+                map.invalidate();
+
+                onLocationChanged(location);
+            }
+        });
+    }
+
+
+    private void animateToMarker(double searched_lat,double searched_lng){
         if(mArgs != null && !mArgs.isEmpty() && searched_lat!=0 && searched_lng!=0){
             GeoPoint geo_point_searched = new GeoPoint(searched_lat, searched_lng);
             map.getController().setCenter(geo_point_searched);
@@ -238,119 +317,22 @@ public class MapFragment extends Fragment implements LocationListener{
 
             map.invalidate();
         }
-
-        if(mArgs != null && !mArgs.isEmpty() && lat!=50.061219 && lat!=0 && lng!=19.936804 && lng!=0) {
-
-
-            Log.d(TAG,"name from postactivity" + name_item);
-            Log.d(TAG,"address from postactivity" + address_item);
-            Log.d(TAG,"lat from postactivity" + String.valueOf(lat));
-            Log.d(TAG,"lng from postactivity" + String.valueOf(lng));
-
-//            addMarker(name_item, description_item, lat, lng);
-            GeoPoint geoPointAdded = new GeoPoint(lat, lng);
-            createMarker(name_item,address_item,geoPointAdded);
-
-            map.getController().setCenter(geoPointAdded);
-            map.getController().animateTo(geoPointAdded);
-        }
-
-
-
-
-//        locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
-//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-
-//        gpsMyLocationProvider = new GpsMyLocationProvider(context);
-//        myLocationNewOverlay =  new MyLocationNewOverlay(gpsMyLocationProvider,map);
-//        myLocationNewOverlay.enableMyLocation();
-//        myLocationNewOverlay.enableFollowLocation();
-//
-//        icon = BitmapFactory.decodeResource(getResources(),R.drawable.marker_cluster);
-////        myLocationNewOverlay.setPersonIcon(icon);
-////        map.getOverlays().add(myLocationNewOverlay);
-//        myLocationNewOverlay.runOnFirstFix( () -> {
-//            map.getOverlays().clear();
-//            map.getOverlays().add(myLocationNewOverlay);
-//            map.invalidate();
-//            mapController.animateTo(myLocationNewOverlay.getMyLocation());
-//
-//        });
-
-
-
-//        map.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                map.getController().setZoom(12.);
-//                map.getController().animateTo(new GeoPoint(45., 2));
-//            }
-//        });
-
     }
 
-    private void loadingMarkes (){
-
-        Log.d(TAG,"loadingMarkes method");
-        int count = itemList.size();
-        Log.d(TAG," loadingMarkes: size of itemList is " + String.valueOf(count));
-
-        for(Item item : itemList){
-            double lat = item.getGeoPoint().getLatitude();
-            double lng = item.getGeoPoint().getLongitude();
-            String name_item = item.getName();
-            String address_item = item.getStreet() + " " + item.getCity();
-            String description_item = item.getDescription();
-            String item_id = item.getItem_id();
-
-            Log.d(TAG,"name" + name_item);
-            Log.d(TAG,"description" + description_item);
-            Log.d(TAG,"lat" + String.valueOf(lat));
-            Log.d(TAG,"lng" + String.valueOf(lng));
-
-
-            addMarker(name_item,description_item,lat,lng);
-
-        }
-    }
-
-
-    private void addMarker(String name,String description,double lat,double lng){
-        Marker marker = new Marker(map);
-        GeoPoint geoPoint = new GeoPoint(lat,lng);
-        marker.setPosition(geoPoint);
-        marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
-        marker.setIcon(getResources().getDrawable(R.drawable.osm_ic_center_map));
-        marker.setTitle(name);
-        marker.setSnippet(description);
-
-        marker.setOnMarkerClickListener((marker1, mapView) ->{
-
-//            String name_item = marker1.getTitle();
-            ItemDialogFragment itemDialogFragment = new ItemDialogFragment();
-            Bundle args = new Bundle();
-            args.putString("name", name);
-            itemDialogFragment.setArguments(args);
-            itemDialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
-            return true;
-        });
-        map.getOverlays().clear();
-        map.getOverlays().add(marker);
-        map.invalidate();
-
-    }
-
-
-    public void createMarker(String name,String address,GeoPoint geoPoint)
+    private void createMarker(String name,String address,GeoPoint geoPoint)
     {
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
 //        GeoPoint geoPoint = new GeoPoint(lat,lng);
 
         OverlayItem item = new OverlayItem(name,address,geoPoint);
+        Drawable marker = context.getDrawable(R.drawable.marker_cluster);
+//        item.setMarker(marker);
+//        item.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
+
         items.add(item);
         ItemizedOverlayWithFocus<OverlayItem> itemItemizedOverlayWithFocus = new ItemizedOverlayWithFocus<OverlayItem>(items,
+                marker,null,0,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
@@ -359,17 +341,17 @@ public class MapFragment extends Fragment implements LocationListener{
                     }
                     @Override
                     public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        ItemDialogFragment itemDialogFragment = new ItemDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putString("name", name);
-                        itemDialogFragment.setArguments(args);
-                        itemDialogFragment.show(getActivity().getSupportFragmentManager(), TAG);
+                        Intent intent = new Intent(context,
+                                ItemListActivity.class);
+                        intent.putExtra("name",name);
+                        startActivity(intent);
                         return true;
                     }
                 }, context);
 
 
         itemItemizedOverlayWithFocus.setFocusItemsOnTap(true);
+        itemItemizedOverlayWithFocus.setMarkerBackgroundColor(Color.MAGENTA);
         map.getOverlays().add(itemItemizedOverlayWithFocus);
         map.getController().setCenter(geoPoint);
         map.getController().animateTo(geoPoint);
@@ -381,7 +363,10 @@ public class MapFragment extends Fragment implements LocationListener{
     @Override
     public void onLocationChanged(Location location) {
         GeoPoint center = new GeoPoint(location.getLatitude(),location.getLongitude());
-        mapController.animateTo(center);
+        Log.d(TAG,"Location user in onLocationChanged: " + location.getLatitude() + ", " + location.getLongitude());
+        map.getController().setCenter(center);
+        map.getController().animateTo(center);
+        map.invalidate();
 //        addMarker(center,"My Location");
     }
 
@@ -397,7 +382,20 @@ public class MapFragment extends Fragment implements LocationListener{
 
     @Override
     public void onProviderDisabled(String provider) {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 10:
+                setUserLocation();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -411,7 +409,12 @@ public class MapFragment extends Fragment implements LocationListener{
     @Override
     public void onStart() {
         super.onStart();
-//        loadItems();
+        animateToMarker(searched_lat,searched_lng);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+//        animateToMarker(searched_lat,searched_lng);
     }
 }

@@ -30,7 +30,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
-                            android:src="@drawable/icon_comments"
+                            android:src="@drawable/ic_menu_mylocation"
                             android:tint="@color/grey_80"
                             app:backgroundTint="@color/grey_20"
                             app:fabSize="mini"

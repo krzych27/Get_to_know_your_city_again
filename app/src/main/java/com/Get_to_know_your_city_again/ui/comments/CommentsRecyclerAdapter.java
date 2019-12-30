@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.Get_to_know_your_city_again.R;
-import com.Get_to_know_your_city_again.model.CommentsItem;
+import com.Get_to_know_your_city_again.models.CommentsItem;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -44,9 +44,8 @@ public class CommentsRecyclerAdapter extends RecyclerView.Adapter<CommentsRecycl
         viewHolder.text.setText(commentsItem.getComment_text());
         viewHolder.addedBy.setText(commentsItem.getUser_name());
 
-//        String pattern = "HH:mm:ss dd/MM/yyyy";
         Date dateCreated = commentsItem.getTimecreated();
-        String date = DateFormat.getDateInstance().format(dateCreated);
+        String date = DateFormat.getDateTimeInstance().format(dateCreated);
         viewHolder.dateAdded.setText(date);
 
     }

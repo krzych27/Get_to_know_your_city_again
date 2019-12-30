@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.Get_to_know_your_city_again.ui.registerAndLogin.LoginActivity;
 import com.Get_to_know_your_city_again.utils.UserApi;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 final String currentUserId = currentUser.getUid();
 
                 collectionReference
-                        .whereEqualTo("userId", currentUserId)
+                        .whereEqualTo("user_id", currentUserId)
                         .addSnapshotListener((EventListener<QuerySnapshot>) (queryDocumentSnapshots, e) -> {
                             if (e != null) {
                                 return;
